@@ -31,6 +31,7 @@ const games = defineCollection({
     accessUrl: z.string().url().optional(),
     accessLabel: z.string().optional(),
     highlighted: z.boolean().default(false),
+    featured: z.boolean().default(false),
     supremapp: z.boolean().default(false)
   })
 });
