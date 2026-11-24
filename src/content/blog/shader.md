@@ -43,6 +43,10 @@ Each of these shaders could fill a series of articles on its own, but since they
 - **Diffuse**: the object's color multiplied by the dot product of the surface normal and the direction to the light. Surfaces facing the light are bright, surfaces at a grazing angle are dark.
 - **Specular**: a fake reflection of the light source that also depends on the camera position, which produces the shiny highlights.
 
+![Phong reflection model: ambient, diffuse and specular components added together](/images/blog/shader/phong-components.png)
+
+*Phong components diagram by [Rainwarrior](https://commons.wikimedia.org/wiki/File:Phong_components_version_4.png), [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0/), via Wikimedia Commons.*
+
 "Per-pixel" means these computations run in the fragment program, for every pixel. The cheaper alternative evaluates lighting in the vertex program and interpolates the result across each triangle (Gouraud shading). Per-pixel lighting makes the biggest difference on low-poly objects, where interpolated lighting looks blotchy and highlights get lost between vertices, and wherever quality matters more than speed.
 
 A **specular map** is a grayscale texture that defines how reflective each part of the mesh is, instead of using a single value for the whole object. On an old sheet of metal, for example, it keeps the rusty areas matte while the clean metal stays shiny.
@@ -56,6 +60,10 @@ It's a fairly heavy shader, but the result looks very realistic. It is used for 
 Bloom is a post-process effect that makes objects look as if they emit light, by spreading their bright areas onto neighboring pixels. An extra render pass draws the scene as a mask: pixels that should glow are drawn in white, everything else in black. The post-process then blurs this mask and adds it on top of the normal image.
 
 The blur is done in two passes, first horizontally and then vertically. A Gaussian blur is separable, so two one-dimensional passes give the same result as a full two-dimensional blur at a fraction of the cost: with a kernel of width *n*, each pixel reads 2*n* texels instead of *n*².
+
+Here is an illustration of the effect from the Cinder forum:
+
+![Image not recovered: bloom effect illustration from the Cinder forum](/images/blog/missing-image.svg)
 
 The main limitation of my implementation is that the amount of glow doesn't depend on the distance to the camera. That doesn't matter for its intended use, but adding a falloff with distance would require the [depth map](http://en.wikipedia.org/wiki/Depth_map).
 

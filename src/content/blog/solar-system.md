@@ -27,3 +27,5 @@ I went further and added:
 - textures
 
 The importer only handles triangles for now. It also doesn't duplicate vertices along UV seams when the modeling software hasn't done it: a vertex on a seam needs two different texture coordinates, one for each side, so without duplication the texture is stretched along the joint. This is mostly visible on the background. I don't know yet whether I'll need to finish the importer or whether we'll be allowed to use a library in later projects.
+
+The sources are available here: [solar-system.zip](/downloads/blog/solar-system/solar-system.zip) (Visual Studio project).

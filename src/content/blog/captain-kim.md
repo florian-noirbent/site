@@ -19,8 +19,10 @@ Today I'm showing the prototype I built to illustrate my game design concept for
 
 It's inspired by [Spacewar!](http://en.wikipedia.org/wiki/Spacewar_(video_game)) (1961) and [Asteroids](http://en.wikipedia.org/wiki/Asteroids_(video_game)) (1979). The concept is simple: asteroids are heading for Earth, and your ship has to destroy them before they hit. The full design document also includes aliens and a wave-based enemy structure, but neither is in this prototype.
 
+![Image not recovered: Captain Kim Web Player demo preview](/images/blog/missing-image.svg)
+
 *The original Unity Web Player demo is no longer available.*
 
 For the record, the best score I know of is 32. Feel free to comment if you beat it.
 
-*Edit, 2014/03/25: I've made a mobile version, currently available on Android only: captainKim.apk*
+*Edit, 2014/03/25: I've made a mobile version, currently available on Android only: captainKim.apk (file not recovered)*

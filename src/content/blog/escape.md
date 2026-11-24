@@ -24,7 +24,9 @@ The prototype has three objects:
 
 The game has six levels, of which levels 1, 2 and 4 are tutorials. It takes about 10 to 30 minutes to finish.
 
-The game could be played in the browser, but it wasn't built for the web and nothing was streamed, so the 4 MB download could take a while. It isn't translated either, but there is very little text: "jouer" means "play", "quitter" means "exit", "rejouer" means "replay", "niveau" means "level" and "niveau suivant" means "next level". The rest should be self-explanatory.
+Click the image to start the game. It wasn't built for the web and nothing is streamed, so the 4 MB download may take a while. It isn't translated either, but there is very little text: "jouer" means "play", "quitter" means "exit", "rejouer" means "replay", "niveau" means "level" and "niveau suivant" means "next level". The rest should be self-explanatory.
+
+![Image not recovered: Escape Web Player demo preview](/images/blog/missing-image.svg)
 
 *The original Unity Web Player demo is no longer available.*
 

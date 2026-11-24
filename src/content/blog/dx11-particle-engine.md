@@ -31,7 +31,7 @@ In the end I chose compute shaders, because of their integration with Unity. Bef
 
 The main drawback, as the title says, is that it only works with DirectX 11. Direct3D 11 was released in 2009, so it's already almost four years old and will only become more widespread. For now, though, it slows me down considerably, since my desktop computer is the only machine I have that can run it.
 
-To learn, I mainly used [Microsoft's DirectCompute lecture series](http://channel9.msdn.com/tags/DirectCompute-Lecture-Series/). My C++ test worked fine, but when I turned to Unity's API, I found [completely empty documentation for many functions](http://docs.unity3d.com/Documentation/ScriptReference/ComputeBuffer.SetData.html). With the help of the forums and a lot of experimenting, I eventually got working code. That's why I released my particle engine as a commented package, hoping it would save others the time it cost me. The comments assumed no prior knowledge of regular shader programming either.
+To learn, I mainly used [Microsoft's DirectCompute lecture series](http://channel9.msdn.com/tags/DirectCompute-Lecture-Series/). My C++ test worked fine, but when I turned to Unity's API, I found [completely empty documentation for many functions](http://docs.unity3d.com/Documentation/ScriptReference/ComputeBuffer.SetData.html). With the help of the forums and a lot of experimenting, I eventually got working code. That's why I'm releasing my particle engine as a commented package (at the end of this article), hoping it saves you the time it cost me. The comments assume no prior knowledge of regular shader programming either.
 
 <iframe src="https://www.youtube-nocookie.com/embed/4eS6lyAJ4EE" title="YouTube video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
@@ -45,4 +45,4 @@ For the final render, I only added alpha blending and a color based on each part
 
 ## Package
 
-*The package was hosted on my old website and is no longer available.*
+[Download the commented particle engine package (particleDX11.unitypackage)](/downloads/blog/dx11-particle-engine/particleDX11.unitypackage)

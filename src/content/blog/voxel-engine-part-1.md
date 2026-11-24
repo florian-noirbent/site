@@ -20,7 +20,11 @@ I hesitated for a long time between C++ and Unity. C++ brings performance and fr
 
 To make the framework easy to drop into another project, my first goal was to integrate it as tightly as possible with Unity: lights, rigidbodies and the rest of the engine should work on the terrain transparently. That is the case today, but I will probably have to give up some of this in future versions, which removes much of Unity's appeal. Right now, advanced lighting computations are out of reach, and using a mesh collider to compute physics from triangles, when everything the physics needs could be read directly from the voxels, is very inefficient: generating the mesh colliders currently takes about 90% of the computation time.
 
+![Image not recovered: Voxel Engine 0.1 Web Player demo preview](/images/blog/missing-image.svg)
+
 *The original Unity Web Player demo is no longer available.*
+
+A glitch may load Escape instead; while I fix it, you can open the demo on its own page *(link no longer available)*.
 
 Controls: ZQSD/WASD to move, the mouse to rotate the camera, left click to add voxels and right click to remove them (hold the button in marching cubes mode).
 

@@ -13,6 +13,10 @@ tags:
 
 Next up is a 3D Bomberman I made in my second year at Epitech. Once again, screenshots are hard to come by. It runs on Linux and is written in C++ with GLUT, OpenGL and a library provided by my school for loading animated FBX models. On this project, I worked on a particle generator for the bomb explosions, the AI, and of course the game mechanics and rendering.
 
+I don't have a screenshot of my own, so here is an image I found that looks very close to it (minus the interface):
+
+![Image not recovered: a 3D Bomberman screenshot close to the look of my game](/images/blog/missing-image.svg)
+
 Since this was my first time using OpenGL, it seems worth going over the mistakes I made, in case it saves someone from repeating them.
 
 ## Rendering

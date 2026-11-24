@@ -20,4 +20,4 @@ It took around 12 hours: 6 for modeling, 3 for UV unwrapping (flattening the mes
 
 ![Another render of the AK-47 model](/images/blog/ak-47-wasr-10/AK47_screenshoot2.jpg)
 
-I decided to share this model. The package includes the .blend and .fbx files plus the textures (diffuse, specular and the UV layout). As for the license: do whatever you want with it :)
+I decided to share this model *(the download link was hosted on my old website and the file could not be recovered)*. The package includes the .blend and .fbx files plus the textures (diffuse, specular and the UV layout). As for the license: do whatever you want with it :)

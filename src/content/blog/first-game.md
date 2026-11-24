@@ -14,6 +14,8 @@ This is my first real game. I made it during the summer after my first year at E
 
 You pilot a rocket through a 2D level, seen from a third-person camera. One key fires the thruster, two keys rotate the rocket, and a boost multiplies the thrust for a few seconds. It sounds simple, but out of the dozen or so people I shared it with, only one got through the tutorial level and, as far as I know, nobody finished the last level. So much for the learning curve.
 
+![Rocket flying through a level of my first Unity game](/images/blog/first-game/rocket-screenshot.png)
+
 The game uses only Unity's built-in primitives. The rocket, for example, is a sphere, a cylinder and two cubes, because I didn't know how to model yet.
 
 There are three fairly long single-player levels. The goal is to get from point A to point B while avoiding balls, lasers, flames and waterfalls, and, in the later levels, outrunning rising lava.
