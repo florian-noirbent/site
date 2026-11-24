@@ -8,11 +8,14 @@ tags:
   - "Prototype"
   - "Rocket"
   - "Student"
+cardImage: /images/blog/rocket/rocket-menu.png
 ---
 
 Here, at last, is the article on the remake of my first game that I've mentioned several times. I've put development on hold for now because of negative feedback: it simply doesn't grab people. Rather than keep investing time, I stopped before simplifying the gameplay so much that it lost its appeal. My testers still can't manage to get their rockets off the ground.
 
 Unlike the first version, which was mostly single-player, this one focuses on multiplayer, with the solo mode meant only as a series of tutorials to prepare the player. The original game, now more than two years old, is still available in [my third article](/blog/first-game).
+
+![Main menu of the Rocket remake, with Play, Multiplayer, Options and Quit buttons](/images/blog/rocket/rocket-menu.png)
 
 I finally found someone who could actually play it, so here's a video:
 
