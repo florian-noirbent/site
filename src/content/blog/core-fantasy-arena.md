@@ -9,9 +9,14 @@ tags:
   - "Lua"
   - "Game design"
   - "Multiplayer"
+cardImage: /images/games/core-fantasy-arena/arena.webp
 ---
 
 [Core Fantasy Arena](/games/core-fantasy-arena) is a prototype I have been building to learn [Core](https://en.wikipedia.org/wiki/Core_(video_game)), Manticore Games' platform for making multiplayer games. The goal was a small arena game in the spirit of Guild Wars 1. The source is on GitHub: [florian-noirbent/CoreFantasyArena](https://github.com/florian-noirbent/CoreFantasyArena).
+
+![Illustration of a team fight in a desert arena: a cleric shielding allies, a knight and a warrior in melee, mages trading fire and lightning across traps and fire grates](/images/games/core-fantasy-arena/arena.webp)
+
+*The kind of fight the arena is built for: two small teams of complementary classes, with healers, fighters and casters.*
 
 ## Why Core, and why Guild Wars
 

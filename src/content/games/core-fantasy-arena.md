@@ -1,7 +1,7 @@
 ---
 title: Core fantasy arena
 description: 3D multiplayer fantasy arena combat MMORPG-like prototype inspired by Guild Wars.
-cardImage: /images/games/core-fantasy-arena-placeholder.svg
+cardImage: /images/games/core-fantasy-arena/arena.webp
 date: 2021-01-01
 status: unreleased
 platforms:
