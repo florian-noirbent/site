@@ -23,7 +23,7 @@ const GAME_GROUPS: { title?: string; match?: (game: Game) => boolean }[] = [
   { title: "Latest", match: (game) => ["claim-earth", "beltwork"].includes(game.slug) },
   { match: (game) => game.slug === "core-fantasy-arena" },
   { title: "SupremApp", match: (game) => game.data.supremapp },
-  { title: "Student", match: (game) => ["cursor-machina", "rocket", "chess-mate"].includes(game.slug) },
+  { title: "Student", match: (game) => ["cursor-machina", "rocket", "chess-mate", "escape"].includes(game.slug) },
   { title: "Other" }
 ];
 

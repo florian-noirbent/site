@@ -79,6 +79,7 @@ export const TAGS: Record<TagGroupKey, Record<string, TagDefinition>> = {
     Rocket: {},
     Hopboy: { aliases: ["Hop Boy"] },
     "Cursor Machina": {},
+    Escape: {},
     "End-of-Year Project": { aliases: ["End-of-year project", "PFA"] },
     "Vehicle Shifter": {},
     Bomberman: {},

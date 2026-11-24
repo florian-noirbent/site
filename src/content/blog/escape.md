@@ -4,6 +4,7 @@ description: "Escape, a Unity puzzle prototype made with e-artsup students for a
 date: 2013-05-18
 type: devlog
 tags:
+  - "Escape"
   - "Unity"
   - "Prototype"
   - "Epitech"
@@ -33,3 +34,5 @@ Click the image to start the game. It wasn't built for the web and nothing is st
 ## My role
 
 Beyond the game design work, I taught the first-year students to program with Unity (with mixed results), and I wrote the trickiest parts of the code myself. I also made the 3D models, then handed the UV layouts to the e-artsup artists for texturing, since their curriculum only covers 3D modeling late.
+
+*The source code of the project is archived on [GitHub](https://github.com/florian-noirbent/Escape).*
