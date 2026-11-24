@@ -45,9 +45,9 @@ const recentPosts = await getRecentPosts(HOME.recentPostCount);
   </section>
 
   <div class="mt-12 space-y-12">
-    <GameGrid title="Featured Games" games={featuredGames} link={{ href: ROUTES.games, label: "See all games" }} />
-
     <PostGrid title="Recent Articles" posts={recentPosts} link={{ href: ROUTES.blog, label: "See all articles" }} />
+
+    <GameGrid title="Featured Games" games={featuredGames} link={{ href: ROUTES.games, label: "See all games" }} />
 
     {
       featuredAssets.length > 0 && (
