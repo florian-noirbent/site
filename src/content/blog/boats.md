@@ -10,11 +10,16 @@ tags:
   - "Factory"
   - "Tower defense"
   - "Prototype"
+cardImage: /images/blog/boats/player-boat.webp
 ---
 
 Since last summer I have been working, on and off, on a desktop strategy game in Unity that I simply call **Boats**. The README sums it up in one line: control a boat, harvest resources on islands, build a network of stations and prepare it for a siege. It mixes two genres I enjoy, factory building and tower defense, and puts both at sea.
 
 The code is on GitHub: [florian-noirbent/Boats](https://github.com/florian-noirbent/Boats).
+
+![The player boat: a white and red tugboat with a funnel, portholes, a deck cannon and an anchor](/images/blog/boats/player-boat.webp)
+
+*The player boat, rendered from the game's `PlayerBoat.blend` model with its painted vertex colors and in-game material colors.*
 
 This article covers both halves of the project: the game I designed, which lives in a game design document, and the game that actually runs, which is a much smaller vertical slice of it. I think the gap between the two is the most useful part to talk about.
 
