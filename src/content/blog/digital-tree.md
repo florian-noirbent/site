@@ -26,13 +26,15 @@ For the effect I wanted, the skeleton is more useful than the skinned surface. T
 
 Neither of these survives a normal export. Blender knows the skin radius and the root flag, but they live in the modifier's own data layer, and standard formats like FBX only carry the usual positions, normals, UVs and colors. So I wrote a few small tools to bridge the gap. They are in my [BlenderTools](https://github.com/florian-noirbent/BlenderTools) repository.
 
+![Pipeline overview: Blender skin skeleton, then baked Depth and Radius attributes, then the .fmt export, then the Unity importer, then the shader glow driven by depth](/images/blog/digital-tree/pipeline.svg)
+
 ## Step 1: bake the skeleton data into attributes
 
 Blender's generic mesh attributes are the right place to store custom per-vertex data, so the first two tools are operators that fill them in.
 
-**Skin radius to attribute** is the simple one. It reads the X radius of every skin vertex and writes it into a float attribute called `Radius`.
+**Skin radius to attribute** ([`SkinRadiusToAttribute.py`](https://github.com/florian-noirbent/BlenderTools/blob/master/addons/SkinRadiusToAttribute.py)) is the simple one. It reads the X radius of every skin vertex and writes it into a float attribute called `Radius`.
 
-**Compute depth** is the interesting one. It runs a breadth-first traversal of the skeleton, starting from the vertices flagged as skin root:
+**Compute depth** ([`ComputeDepth.py`](https://github.com/florian-noirbent/BlenderTools/blob/master/addons/ComputeDepth.py)) is the interesting one. It runs a breadth-first traversal of the skeleton, starting from the vertices flagged as skin root:
 
 1. every root vertex gets depth 1;
 2. their neighbors along the edges that have not been visited yet get depth 2;
@@ -42,9 +44,11 @@ The result goes into an integer `Depth` attribute. Since the skeleton of a tree 
 
 Both operators expect the attributes to already exist on the mesh: you create `Depth` (integer) and `Radius` (float) in the attribute panel, then run the operators from the Object menu.
 
+![A tree skeleton with each vertex numbered by its depth, from 1 at the skin root to 5 at the branch tips, and a halo sized by its radius, next to the Depth and Radius attribute values](/images/blog/digital-tree/step1-bake.svg)
+
 ## Step 2: a flexible mesh format
 
-With the data in attributes, it still has to leave Blender. Instead of fighting an existing format, I wrote an exporter for a tiny custom one, the **flexible mesh text format** (`.fmt`). It is plain JSON with:
+With the data in attributes, it still has to leave Blender. Instead of fighting an existing format, I wrote an exporter ([`MeshExporter.py`](https://github.com/florian-noirbent/BlenderTools/blob/master/addons/MeshExporter.py)) for a tiny custom one, the **flexible mesh text format** (`.fmt`). It is plain JSON with:
 
 - a **header** that describes the vertex layout: for each attribute, its shader semantic, its type (`float32`, `int32`, `uint8`) and its component count, plus the vertex count, index count and topology;
 - a **data** section with the vertices and the indices.
@@ -53,15 +57,19 @@ The key feature is the attribute mapping. When you open the export dialog, it li
 
 The exporter also lets you choose the topology. For this project I export **edges**, not triangles: the index buffer is just the list of skeleton edges, two vertex indices each. That gives the shader the branch graph itself, rendered as lines.
 
+![The export dialog maps position, Depth and Radius to POSITION, TEXCOORD0 and TEXCOORD1, with the Blender-to-stored type table, next to the resulting .fmt JSON with its header and data sections](/images/blog/digital-tree/step2-export.svg)
+
 ## Step 3: a Unity scripted importer
 
-On the Unity side, a `ScriptedImporter` registered for the `.fmt` extension turns the file into a `Mesh` asset when it is dropped into the project. It:
+On the Unity side, a `ScriptedImporter` ([`FmtImporter.cs`](https://github.com/florian-noirbent/BlenderTools/blob/master/UnityImporter/FmtImporter.cs)) registered for the `.fmt` extension turns the file into a `Mesh` asset when it is dropped into the project. It:
 
 1. builds a `VertexAttributeDescriptor` layout from the header, mapping `POSITION`, `TEXCOORD0` and `TEXCOORD1` to Unity's vertex attributes;
 2. converts each vertex from JSON values into raw bytes in that layout and fills the vertex buffer with `SetVertexBufferData`;
 3. fills a 32-bit index buffer and creates a single submesh with `MeshTopology.Lines` for edge exports.
 
 This uses Unity's advanced mesh API, so the depth and radius arrive in the shader exactly as stored, an integer and a float in their own texture coordinate channels, without being squeezed into UVs or vertex colors. In the shader, depth gives each point its position along the tree, so anything driven by depth and time travels from the trunk toward the tips.
+
+![A 20-byte vertex: 12 bytes of POSITION, 4 bytes of TEXCOORD0 depth and 4 bytes of TEXCOORD1 radius, then the import stages from FmtImporter.cs to a Mesh asset with line topology](/images/blog/digital-tree/step3-import.svg)
 
 ## Limitations
 
@@ -80,4 +88,7 @@ The useful lesson is about where data lives. Blender already had everything I ne
 ## Links
 
 - Source code (Blender add-ons and Unity importer): [github.com/florian-noirbent/BlenderTools](https://github.com/florian-noirbent/BlenderTools)
+  - Step 1: [`ComputeDepth.py`](https://github.com/florian-noirbent/BlenderTools/blob/master/addons/ComputeDepth.py), [`SkinRadiusToAttribute.py`](https://github.com/florian-noirbent/BlenderTools/blob/master/addons/SkinRadiusToAttribute.py)
+  - Step 2: [`MeshExporter.py`](https://github.com/florian-noirbent/BlenderTools/blob/master/addons/MeshExporter.py)
+  - Step 3: [`FmtImporter.cs`](https://github.com/florian-noirbent/BlenderTools/blob/master/UnityImporter/FmtImporter.cs)
 - Video: [Digital Tree on YouTube](https://www.youtube.com/shorts/5kYSGiTeMBQ)
