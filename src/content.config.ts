@@ -1,5 +1,16 @@
 import { defineCollection, z } from "astro:content";
-import { BLOG_TYPE_KEYS, GAME_LINK_KINDS, type GameLinkKey } from "./config/site";
+import { BLOG_TYPE_KEYS, LINK_KINDS, type LinkKey } from "./config/site";
+
+/** One optional URL per configured link kind (play, itch, source, ...). */
+const externalLinks = z
+  .object(
+    Object.fromEntries(LINK_KINDS.map(({ key }) => [key, z.string().url().optional()])) as Record<
+      LinkKey,
+      z.ZodOptional<z.ZodString>
+    >
+  )
+  .strict()
+  .default({});
 
 const assets = defineCollection({
   type: "content",
@@ -12,20 +23,11 @@ const assets = defineCollection({
     featured: z.boolean().default(false),
     status: z.enum(["shipped", "in-progress", "planned"]),
     storeUrl: z.string().url().optional(),
-    storeLabel: z.string().optional()
+    storeLabel: z.string().optional(),
+    links: externalLinks
   })
 });
 
-/** One optional URL per configured link kind (play, itch, source, ...). */
-const gameLinks = z
-  .object(
-    Object.fromEntries(GAME_LINK_KINDS.map(({ key }) => [key, z.string().url().optional()])) as Record<
-      GameLinkKey,
-      z.ZodOptional<z.ZodString>
-    >
-  )
-  .strict()
-  .default({});
 
 const games = defineCollection({
   type: "content",
@@ -40,7 +42,7 @@ const games = defineCollection({
     genre: z.string(),
     cardStyle: z.enum(["cover", "icon"]).default("cover"),
     releaseNote: z.string().optional(),
-    links: gameLinks,
+    links: externalLinks,
     /** Generic external link, for games without a play/itch/source link. */
     accessUrl: z.string().url().optional(),
     accessLabel: z.string().optional(),

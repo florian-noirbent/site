@@ -1,14 +1,9 @@
 import { getCollection, type CollectionEntry } from "astro:content";
-import { GAME_LINK_KINDS, ROUTES } from "../config/site";
+import { ROUTES } from "../config/site";
 import { byDateDesc } from "./format";
+import { configuredLinks, withExtraLink, type ExternalLink } from "./links";
 
 export type Game = CollectionEntry<"games">;
-
-export interface GameLink {
-  label: string;
-  url: string;
-  primary: boolean;
-}
 
 export interface GameGroup {
   title?: string;
@@ -43,17 +38,5 @@ export const groupGames = (games: Game[]): GameGroup[] => {
 };
 
 /** External links in configured order; the legacy `accessUrl` comes last. */
-export const getGameLinks = (game: Game): GameLink[] => {
-  const links: GameLink[] = GAME_LINK_KINDS.flatMap(({ key, label, primary }) => {
-    const url = game.data.links[key];
-    return url ? [{ label, url, primary }] : [];
-  });
-  if (game.data.accessUrl) {
-    links.push({
-      label: game.data.accessLabel ?? "Access game",
-      url: game.data.accessUrl,
-      primary: !links.some((link) => link.primary)
-    });
-  }
-  return links;
-};
+export const getGameLinks = (game: Game): ExternalLink[] =>
+  withExtraLink(configuredLinks(game.data.links), game.data.accessUrl, game.data.accessLabel ?? "Access game");

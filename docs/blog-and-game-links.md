@@ -61,7 +61,8 @@ game's slug once normalized: the tag `Claim Earth` matches the game
 ## Game links
 
 Game pages show one button per URL under `links`, in the order and with the
-labels defined by `GAME_LINK_KINDS`:
+labels defined by `LINK_KINDS` (`src/config/site.ts`). Assets use the same
+`links:` field; their `storeUrl` stays the main button:
 
 ```yaml
 links:
@@ -71,7 +72,7 @@ links:
 ```
 
 Older entries can keep `accessUrl` / `accessLabel`; it is shown after the
-configured links. To add a new kind of link, add it to `GAME_LINK_KINDS`.
+configured links. To add a new kind of link, add it to `LINK_KINDS`.
 
 ## Games page groups
 

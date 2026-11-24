@@ -13,6 +13,8 @@ featured: true
 status: shipped
 storeUrl: https://assetstore.unity.com/packages/slug/tools/window-fracture-placeholder-000000
 storeLabel: View in Unity Asset store
+links:
+  source: https://github.com/florian-noirbent/WindowFracture
 ---
 
 ## Overview

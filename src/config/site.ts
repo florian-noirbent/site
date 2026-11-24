@@ -58,13 +58,13 @@ export const BLOG_FILTER_PARAMS = {
 } as const;
 
 /**
- * External links a game can expose, in display order. The key is the property
- * name under `links` in a game's frontmatter.
+ * External links a game or an asset can expose, in display order. The key is
+ * the property name under `links` in the frontmatter.
  */
-export const GAME_LINK_KINDS = [
+export const LINK_KINDS = [
   { key: "play", label: "Play", primary: true },
   { key: "itch", label: "itch.io", primary: false },
   { key: "source", label: "GitHub source", primary: false }
 ] as const;
 
-export type GameLinkKey = (typeof GAME_LINK_KINDS)[number]["key"];
+export type LinkKey = (typeof LINK_KINDS)[number]["key"];

@@ -3,6 +3,8 @@ import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Tag from "../../components/Tag.astro";
 import Prose from "../../components/Prose.astro";
+import LinkButtons from "../../components/LinkButtons.astro";
+import { configuredLinks, leadWith } from "../../lib/links";
 
 export async function getStaticPaths() {
   const assets = await getCollection("assets");
@@ -14,8 +16,7 @@ export async function getStaticPaths() {
 
 const { asset } = Astro.props;
 const { Content } = await render(asset);
-const storeUrl = asset.data.storeUrl;
-const storeLabel = asset.data.storeLabel || "View in store";
+const links = leadWith(asset.data.storeUrl, asset.data.storeLabel || "View in store", configuredLinks(asset.data.links));
 ---
 
 <BaseLayout
@@ -35,16 +36,9 @@ const storeLabel = asset.data.storeLabel || "View in store";
           </div>
 
           {
-            storeUrl && (
-              <div class="mt-8 flex justify-center">
-                <a
-                  href={storeUrl}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  class="inline-flex w-full max-w-md items-center justify-center rounded-xl bg-cyan-600 px-8 py-4 text-lg font-semibold text-white shadow-sm transition hover:bg-cyan-500 sm:w-auto sm:min-w-[320px]"
-                >
-                  {storeLabel}
-                </a>
+            links.length > 0 && (
+              <div class="mt-8">
+                <LinkButtons links={links} />
               </div>
             )
           }
