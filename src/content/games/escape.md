@@ -1,7 +1,7 @@
 ---
 title: Escape
 description: "A physics puzzle game: place triangles, cubes and teleporters on a rusty wall to guide a ball from the entry pipe to the exit, while a trigger flips how every object behaves."
-cardImage: /images/games/escape-placeholder.svg
+cardImage: /images/games/escape/cover.webp
 date: 2013-05-18
 status: unreleased
 platforms:

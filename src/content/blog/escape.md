@@ -9,9 +9,12 @@ tags:
   - "Prototype"
   - "Epitech"
   - "Student"
+cardImage: /images/blog/escape/illustration.webp
 ---
 
 This time it's a current project, since I presented it just last week. It's called "Escape", a prototype I made for a game design module. This was the first year the module ran, and I wasn't going to miss it; I hope the school keeps it for future students. The project was a collaboration with e-artsup, an art and design school. Our group brought together three second-year e-artsup students, first-year Epitech students, and me, in my third year. Unlike my [end-of-year project](/blog/end-of-year-project-part-1), which was graded on purely technical criteria, this one was about game design: the goal was to come up with an innovative concept, iterate on the gameplay and polish the look.
+
+![Illustration of an Escape level: a steel ball falls from a copper pipe onto a rusty riveted wall of brass triangles, metal cubes and purple teleporters, with the green trigger glowing in the middle and the exit pipe at the bottom right](/images/blog/escape/illustration.webp)
 
 ## The game
 
