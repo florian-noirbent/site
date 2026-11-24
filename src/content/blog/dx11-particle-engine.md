@@ -46,3 +46,5 @@ For the final render, I only added alpha blending and a color based on each part
 ## Package
 
 [Download the commented particle engine package (particleDX11.unitypackage)](/downloads/blog/dx11-particle-engine/particleDX11.unitypackage)
+
+The commented compute shader, particle shader and C# driver are also on GitHub, in the `testParticle` folder of [MicroProjects](https://github.com/florian-noirbent/MicroProjects/tree/main/testParticle).

@@ -46,7 +46,7 @@ Window Fracture is a runtime package for realistic, pattern-driven shattering fo
 
 ## Links
 
-- [GitHub repository](https://github.com/Tiitan/WindowFracture) - Unity license required for commercial use and support.
+- [GitHub repository](https://github.com/florian-noirbent/WindowFracture) - Unity license required for commercial use and support.
 
 ## Changelog
 

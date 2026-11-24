@@ -9,6 +9,8 @@ platforms:
 engine: Core (Unreal)
 genre: 3D Multiplayer Arena RPG
 releaseNote: Unreleased prototype.
+links:
+  source: https://github.com/florian-noirbent/CoreFantasyArena
 ---
 
 ## Overview

@@ -85,22 +85,11 @@ The video above shows the result. It works, but if I were to start again, I woul
 
 The same day, I also committed a first answer to [Code vs Zombies](https://www.codingame.com/multiplayer/optimization/code-vs-zombies), an optimization puzzle. You control Ash, who moves 1000 units per turn and automatically shoots every zombie within 2000 units, while the zombies move 400 units per turn toward the nearest human. My [Python version](https://github.com/florian-noirbent/CodingGame/blob/master/CodeVsZombies/CodeVsZombies.py) is a single heuristic: every turn, among the humans that can still be saved, pick the one with a zombie closest to them and walk toward them. A human is considered savable when the zombie's distance times 2.5 (the speed ratio between Ash and a zombie) is greater than Ash's distance minus his 2000-unit shooting range. It keeps humans alive but makes no attempt at a high score, which in this puzzle rewards killing many zombies at once.
 
-## Other programming games: Screeps
+## Other programming games
 
-CodinGame is not my first contact with games played by code. In 2016 I spent a few weeks on [Screeps](https://screeps.com/), an MMO real-time strategy game where you don't control anything with the mouse: you write JavaScript that runs every tick on the server and drives your units, called creeps, and your buildings, even while you are offline. My code is on GitHub as [ScreepsIA](https://github.com/florian-noirbent/ScreepsIA).
+CodinGame is not my first contact with games played by code. In 2016 I spent a few weeks on [Screeps](https://screeps.com/), an MMO real-time strategy game where you don't control anything with the mouse: your JavaScript runs on the server every tick and drives every unit, even while you're offline. My colony AI used role modules (harvesters, haulers, builders, upgraders, defenders), static mining at each energy source, flag-driven expansion to neighboring rooms, and tower and safe-mode defense. I wrote it up in detail in [Screeps: Writing an AI for an MMO Where Code Is the Only Controller](/blog/screeps-ai).
 
-The architecture is role-based. Each creep stores a role in its memory (harvester, hauler, builder, upgrader, repairer, protector, attacker, colonist, scout, and a "thief" that steals energy from a flagged room), and each role is a module with two functions: `getSpawnInfo`, which decides whether the colony needs one more creep of that role and with what body, and `run`, which drives one creep. The spawn walks through the roles in priority order and builds the first one that is needed, so harvesters and haulers always come before builders and attackers. Bodies scale with the energy available, from a 4-part harvester at the start to a 10-part one once the room has grown.
-
-A few details I still like:
-
-- **Static mining.** When a room is first claimed, the code counts the free tiles around each energy source to know how many harvesters can work it at once. Harvesters then stay at their source and drop energy into a container, which they also repair, while haulers carry it to where it is needed.
-- **Multi-room expansion with flags.** Placing a flag in the game assigns it to the nearest owned room, which then sends colonists, reserves the room and starts harvesting it remotely.
-- **Defense.** Rooms next to a colony report hostile creeps; civilian creeps flee from armed enemies, remote harvesting is suspended in invaded rooms, towers shoot the closest hostile and repair structures otherwise, and the room triggers safe mode when walls get too damaged by a player attack.
-- **Robustness.** Every room, structure and creep update is wrapped in its own try/catch, so a bug in one role doesn't stop the whole colony for that tick.
-
-## Rosil
-
-Closer to the present, I recently started [Rosil](https://github.com/florian-noirbent/Rosil), short for "RObot Scripting Language": a small scripting language of my own, with an indentation-based syntax, classes, properties, enums and string interpolation. So far it has a C++ tokenizer, a C++/CLI wrapper to use it from .NET, a C# language server and a Visual Studio Code extension providing syntax highlighting. It is still at a very early stage, but it comes from the same interest: writing code that drives robots, and building the tools to do it.
+Closer to the present, I recently started [Rosil](/blog/rosil), short for "RObot Scripting Language": the first building block of a programming game of my own, where players would script robots to fight each other. So far it has a tokenizer for an indentation-based language, a C# language server and a VS Code extension.
 
 ## Links
 

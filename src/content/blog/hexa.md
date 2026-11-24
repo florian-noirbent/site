@@ -36,3 +36,5 @@ I'd still like to share the main problems I ran into. The first was knowing wher
 Next, I needed to know which hexagon the mouse is over. The naive approach is to invert the drawing function, but what works for squares doesn't necessarily work for hexagons. It does give an answer, but only a rough one, because the "hitbox" it produces is actually a parallelogram aligned with the coordinate axes, not a hexagon. So I refined it: take the hexagon found this way along with its neighbors, measure the distance from the mouse to each of their centers, and select the nearest one.
 
 And this is where a bug cost me half a day. The Pythagorean theorem only holds in a right triangle, and in a non-orthonormal system the axes are not at right angles, so *"distance = sqrt((x1 - x2)² + (y1 - y2)²)"* gives the wrong answer when applied directly to the skewed coordinates. Distances have to be measured in an orthonormal system, for example by converting both points back to screen coordinates first.
+
+*The source code of the engine and the pathfinding prototype is on GitHub: [GameEngine2D](https://github.com/florian-noirbent/GameEngine2D).*
