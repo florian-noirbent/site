@@ -31,8 +31,9 @@ to the default card set in `BLOG_CARD` (`src/config/site.ts`). The
 "Image not recovered" placeholder is never used as a card.
 
 Posts are sorted newest first. The home page shows the latest
-`HOME.recentPostCount` posts. The blog index filters by tag, type and date range
-on the client, and keeps the filters in the URL (`/blog?tag=claim-earth`).
+`HOME.recentPostCount` posts. The blog index filters by tag (an article must have every
+selected tag; the tag list is in an expander, collapsed by default), type and
+date range on the client, and keeps the filters in the URL (`/blog?tag=claim-earth`).
 
 ## Tags
 
