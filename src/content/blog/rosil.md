@@ -9,9 +9,14 @@ tags:
   - "Compilers"
   - "Programming game"
   - "VS Code"
+cardImage: /images/blog/rosil/robot-illustration.webp
 ---
 
 [Rosil](https://github.com/florian-noirbent/Rosil), short for "RObot Scripting Language", is the language for a game I want to make: a PvP programming game, where you don't control your robots with a mouse or a gamepad but write the code that drives them, and then watch that code fight the code of another player. Before there can be robots or an arena, there has to be a language, so that is where I started. This article covers the first two weeks of work, from the first sample scripts on June 27 to a language server talking to Visual Studio Code.
+
+![Illustration of a four-legged utility robot with a manipulator arm, antenna and cargo crates, standing on a lunar surface near a base](/images/blog/rosil/robot-illustration.webp)
+
+*The kind of robot a Rosil script would drive: sensors, an arm, cargo, and no human at the controls.*
 
 ## The inspiration: Colobot
 
