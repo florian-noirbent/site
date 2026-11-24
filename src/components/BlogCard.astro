@@ -1,6 +1,7 @@
 ---
 import Tag from "./Tag.astro";
-import { postCardImage, postTypeLabel, postUrl, type Post } from "../lib/blog";
+import { postCardImage, postTags, postTypeLabel, postUrl, type Post } from "../lib/blog";
+import { TAG_UI } from "../config/tags";
 import { formatDate, isoDate } from "../lib/format";
 
 interface Props {
@@ -8,7 +9,10 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, description, date, tags } = post.data;
+const { title, description, date } = post.data;
+const tags = postTags(post);
+const shownTags = tags.slice(0, TAG_UI.cardMaxTags);
+const hiddenTagCount = tags.length - shownTags.length;
 const card = postCardImage(post);
 ---
 
@@ -39,7 +43,8 @@ const card = postCardImage(post);
     <p class="text-sm text-slate-700 dark:text-slate-300">{description}</p>
 
     <div class="mt-auto flex flex-wrap gap-2">
-      {tags.map((tag) => <Tag label={tag} />)}
+      {shownTags.map((tag) => <Tag label={tag.label} />)}
+      {hiddenTagCount > 0 && <span class="self-center text-xs text-slate-500 dark:text-slate-400">+{hiddenTagCount}</span>}
     </div>
   </article>
 </a>

@@ -4,35 +4,59 @@
  * `data-post` inside `[data-post-list]`, using its `data-tags` (space-separated
  * tag keys), `data-type` and `data-date` (YYYY-MM-DD) attributes. The state is
  * mirrored in the URL query (see BLOG_FILTER_PARAMS) so filtered views can be linked.
+ * Tags are shown by group; each group lists its most used tags and hides the
+ * rest behind a "more" toggle (see TAG_UI in src/config/tags.ts).
  */
 import { BLOG_FILTER_PARAMS, BLOG_TYPES } from "../config/site";
+import { TAG_UI } from "../config/tags";
+import { tagAliasMap } from "../lib/tags";
+import type { TagGroup } from "../lib/blog";
 
 interface Props {
-  tags: { key: string; label: string; count: number }[];
+  tagGroups: TagGroup[];
   types: (keyof typeof BLOG_TYPES)[];
   total: number;
 }
 
-const { tags, types, total } = Astro.props;
+const { tagGroups, types, total } = Astro.props;
+const visible = TAG_UI.filterVisiblePerGroup;
+const chipClass =
+  "cursor-pointer rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 transition hover:border-cyan-400 has-[:checked]:border-cyan-600 has-[:checked]:bg-cyan-600 has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-cyan-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:has-[:checked]:border-cyan-500 dark:has-[:checked]:bg-cyan-500 dark:has-[:checked]:text-slate-950";
 const P = BLOG_FILTER_PARAMS;
 const fieldClass =
   "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100";
 const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400";
 ---
 
-<form class="surface space-y-5" data-blog-filters aria-label="Filter articles">
-  <fieldset>
+<form class="surface space-y-5" data-blog-filters data-tag-aliases={JSON.stringify(tagAliasMap())} aria-label="Filter articles">
+  <fieldset class="space-y-2.5">
     <legend class={labelClass}>Tags</legend>
-    <div class="flex flex-wrap gap-2">
-      {
-        tags.map((tag) => (
-          <label class="cursor-pointer rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-cyan-400 has-[:checked]:border-cyan-600 has-[:checked]:bg-cyan-600 has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-cyan-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:has-[:checked]:border-cyan-500 dark:has-[:checked]:bg-cyan-500 dark:has-[:checked]:text-slate-950">
-            <input type="checkbox" name={P.tag} value={tag.key} class="sr-only" />
-            {tag.label} <span class="opacity-70">({tag.count})</span>
-          </label>
-        ))
-      }
-    </div>
+    {
+      tagGroups.map((group) => (
+        <div class="grid gap-1.5 sm:grid-cols-[10rem_1fr] sm:items-baseline" data-tag-group>
+          <span class="text-xs font-semibold text-slate-600 dark:text-slate-300">{group.label}</span>
+          <div class="flex flex-wrap items-center gap-1.5">
+            {group.tags.map((tag, index) => (
+              <label class={chipClass} hidden={index >= visible} data-tag-extra={index >= visible ? "" : undefined}>
+                <input type="checkbox" name={P.tag} value={tag.key} class="sr-only" />
+                {tag.label} <span class="opacity-70">({tag.count})</span>
+              </label>
+            ))}
+            {group.tags.length > visible && (
+              <button
+                type="button"
+                class="rounded-full px-2 py-1 text-xs font-semibold text-cyan-700 hover:underline dark:text-cyan-300"
+                data-tag-more
+                data-more-label={`+${group.tags.length - visible} more`}
+                aria-expanded="false"
+              >
+                +{group.tags.length - visible} more
+              </button>
+            )}
+          </div>
+        </div>
+      ))
+    }
   </fieldset>
 
   <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
@@ -89,9 +113,31 @@ const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide t
       sort: field(P.sort)?.value ?? "newest"
     });
 
+    const aliases: Record<string, string> = JSON.parse(form.dataset.tagAliases ?? "{}");
+
+    const setGroupExpanded = (group: Element, expanded: boolean) => {
+      group.querySelectorAll<HTMLElement>("[data-tag-extra]").forEach((extra) => (extra.hidden = !expanded));
+      const button = group.querySelector<HTMLButtonElement>("[data-tag-more]");
+      if (button) {
+        button.setAttribute("aria-expanded", String(expanded));
+        button.textContent = expanded ? "Show less" : button.dataset.moreLabel ?? "More";
+      }
+    };
+
+    form.querySelectorAll<HTMLButtonElement>("[data-tag-more]").forEach((button) => {
+      button.addEventListener("click", () => {
+        const group = button.closest("[data-tag-group]");
+        if (group) setGroupExpanded(group, button.getAttribute("aria-expanded") !== "true");
+      });
+    });
+
     const writeForm = (params: URLSearchParams) => {
-      const tags = params.getAll(P.tag);
+      const tags = params.getAll(P.tag).map((tag) => aliases[tag] ?? tag);
       tagBoxes.forEach((box) => (box.checked = tags.includes(box.value)));
+      // Reveal a collapsed group when one of its hidden tags is selected (e.g. from a link).
+      form.querySelectorAll("[data-tag-group]").forEach((group) => {
+        if (group.querySelector("[data-tag-extra] input:checked")) setGroupExpanded(group, true);
+      });
       for (const name of [P.type, P.from, P.to, P.sort]) {
         const input = field(name);
         const value = params.get(name);

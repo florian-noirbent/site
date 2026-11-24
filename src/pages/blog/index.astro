@@ -3,13 +3,12 @@ import BaseLayout from "../../layouts/BaseLayout.astro";
 import BlogCard from "../../components/BlogCard.astro";
 import BlogFilters from "../../components/BlogFilters.astro";
 import CardGrid from "../../components/CardGrid.astro";
-import { getPosts, getTagIndex } from "../../lib/blog";
+import { getPosts, getTagGroups, postTags } from "../../lib/blog";
 import { isoDate } from "../../lib/format";
-import { slugifyTag } from "../../lib/tags";
 import { BLOG_TYPE_KEYS } from "../../config/site";
 
 const posts = await getPosts();
-const tags = getTagIndex(posts);
+const tagGroups = getTagGroups(posts);
 const usedTypes = BLOG_TYPE_KEYS.filter((type) => posts.some((post) => post.data.type === type));
 ---
 
@@ -22,7 +21,7 @@ const usedTypes = BLOG_TYPE_KEYS.filter((type) => posts.some((post) => post.data
   </section>
 
   <div class="mt-8">
-    <BlogFilters tags={tags} types={usedTypes} total={posts.length} />
+    <BlogFilters tagGroups={tagGroups} types={usedTypes} total={posts.length} />
   </div>
 
   <CardGrid as="ul" columns={3} class="mt-8" data-post-list>
@@ -30,7 +29,7 @@ const usedTypes = BLOG_TYPE_KEYS.filter((type) => posts.some((post) => post.data
       posts.map((post) => (
         <li
           data-post
-          data-tags={post.data.tags.map(slugifyTag).join(" ")}
+          data-tags={postTags(post).map((tag) => tag.key).join(" ")}
           data-type={post.data.type}
           data-date={isoDate(post.data.date)}
         >

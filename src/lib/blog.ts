@@ -2,7 +2,8 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import { BLOG_CARD, BLOG_FILTER_PARAMS, BLOG_TYPES, ROUTES } from "../config/site";
 import { byDateDesc } from "./format";
 import type { Game } from "./games";
-import { slugifyTag } from "./tags";
+import { TAG_GROUPS, type TagGroupKey } from "../config/tags";
+import { canonicalTagKey, resolveTags, slugifyTag, type TagInfo } from "./tags";
 
 export type Post = CollectionEntry<"blog">;
 
@@ -34,8 +35,12 @@ export const postCardImage = (post: Post): CardImage => {
   return { src: BLOG_CARD.defaultImage, fit: "cover" };
 };
 
-/** Blog index pre-filtered on one tag, e.g. `/blog?tag=claim-earth`. */
-export const tagUrl = (tag: string) => `${ROUTES.blog}?${BLOG_FILTER_PARAMS.tag}=${encodeURIComponent(slugifyTag(tag))}`;
+/** Blog index pre-filtered on one tag, e.g. `/blog?tag=claim-earth`. Aliases link to their canonical tag. */
+export const tagUrl = (tag: string) =>
+  `${ROUTES.blog}?${BLOG_FILTER_PARAMS.tag}=${encodeURIComponent(canonicalTagKey(tag))}`;
+
+/** The post's canonical tags (aliases folded, hidden tags removed), most specific first. */
+export const postTags = (post: Post): TagInfo[] => resolveTags(post.data.tags);
 
 /** Published posts, most recent first. */
 export const getPosts = async () =>
@@ -43,25 +48,41 @@ export const getPosts = async () =>
 
 export const getRecentPosts = async (count: number) => (await getPosts()).slice(0, count);
 
+/** True when the post carries the tag, either as written or through its canonical tag. */
 export const postHasTag = (post: Post, tag: string) => {
   const key = slugifyTag(tag);
-  return post.data.tags.some((postTag) => slugifyTag(postTag) === key);
+  return post.data.tags.some((postTag) => slugifyTag(postTag) === key) || postTags(post).some((t) => t.key === key);
 };
 
 /** Posts tagged with the game's name (matched through its slug). */
 export const getPostsForGame = async (game: Game) =>
   (await getPosts()).filter((post) => postHasTag(post, game.slug));
 
-/** Every tag used by published posts, with its key and post count. */
-export const getTagIndex = (posts: Post[]) => {
-  const tags = new Map<string, { key: string; label: string; count: number }>();
+export interface TagCount extends TagInfo {
+  count: number;
+}
+
+export interface TagGroup {
+  key: TagGroupKey;
+  label: string;
+  tags: TagCount[];
+}
+
+/** Canonical tags used by the posts, grouped as in the taxonomy and sorted by post count. */
+export const getTagGroups = (posts: Post[]): TagGroup[] => {
+  const counts = new Map<string, TagCount>();
   for (const post of posts) {
-    for (const label of post.data.tags) {
-      const key = slugifyTag(label);
-      const entry = tags.get(key) ?? { key, label, count: 0 };
+    for (const tag of postTags(post)) {
+      const entry = counts.get(tag.key) ?? { ...tag, count: 0 };
       entry.count += 1;
-      tags.set(key, entry);
+      counts.set(tag.key, entry);
     }
   }
-  return [...tags.values()].sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+  return TAG_GROUPS.map(({ key, label }) => ({
+    key,
+    label,
+    tags: [...counts.values()]
+      .filter((tag) => tag.group === key)
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label))
+  })).filter((group) => group.tags.length > 0);
 };

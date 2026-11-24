@@ -34,6 +34,23 @@ Posts are sorted newest first. The home page shows the latest
 `HOME.recentPostCount` posts. The blog index filters by tag, type and date range
 on the client, and keeps the filters in the URL (`/blog?tag=claim-earth`).
 
+## Tags
+
+Tags in frontmatter are free-form, but the blog only shows canonical tags from
+the taxonomy in `src/config/tags.ts`:
+
+- `TAGS` lists each canonical tag under a group (Topics, Engines & tools,
+  Languages, Platforms & genres, Projects, Context). `aliases` fold other
+  spellings or narrower tags into it (`HLSL` and `Cg` show as `Shaders`,
+  `Ludum Dare` as `Game jam`).
+- `HIDDEN_TAGS` are dropped from filters, cards and article pages.
+- `TAG_UI` sets how many tags each filter group shows before "+N more", and how
+  many tags a card shows.
+- A tag that is in none of these lists still works (under Topics) but logs a
+  build warning: add it to the taxonomy.
+
+Old links that use an alias (`/blog?tag=ludum-dare`) select the canonical tag.
+
 ## Linking posts to a game
 
 A post appears in a game's "Blog posts" section when one of its tags matches the
