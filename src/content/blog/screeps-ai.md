@@ -8,6 +8,7 @@ tags:
   - "JavaScript"
   - "AI"
   - "Programming game"
+cardImage: /images/blog/screeps-ai/colony.webp
 ---
 
 For the last three weeks, most of my evenings have gone into a game I never actually play with the mouse. [Screeps](https://screeps.com/) is an MMO real-time strategy game where the only way to give orders is to write JavaScript, and that code keeps running on the server while I sleep. This article introduces the game, then walks through the AI I wrote for it, [ScreepsIA](https://github.com/florian-noirbent/ScreepsIA): how it is organized, how each kind of unit behaves, and the economy that comes out of those simple rules.
@@ -16,7 +17,15 @@ For the last three weeks, most of my evenings have gone into a game I never actu
 
 Screeps calls itself a "massive multiplayer online real-time strategy game" for programmers ([official introduction](https://docs.screeps.com/introduction.html)). Every player builds a colony in one single persistent world shared with everyone else. The world is a grid of rooms of 50 by 50 tiles, connected by exits, with plains, swamps and walls. It has been on Steam Early Access since June 2016, sold as lifetime access with an optional monthly subscription that increases how much CPU your scripts may use ([MMOs.com](https://mmos.com/news/screeps-the-mmorts-for-programmers-launches-on-steam-early-access), [Steam page](https://store.steampowered.com/app/464350/Screeps_World/)).
 
+![A developed Screeps base: central structures surrounded by rows of extensions, roads and creeps inside the room walls](/images/blog/screeps-ai/colony.webp)
+
+*Image: © Screeps, LLC, from the [Screeps: World Steam page](https://store.steampowered.com/app/464350/Screeps_World/).*
+
 The twist is in the input. There is no unit selection and no right-click to move. You upload a `main.js` module that exports a `loop` function, and the server calls it once per game tick for every player. Whatever your code tells your units to do during that tick is what they do. When you log off, the code keeps running: your colony mines, builds and defends itself without you, for better or worse.
+
+![The in-game script editor, where the colony is controlled entirely through JavaScript modules](/images/blog/screeps-ai/script-editor.webp)
+
+*Image: © Screeps, LLC, from the [Screeps: World Steam page](https://store.steampowered.com/app/464350/Screeps_World/).*
 
 The pieces of the game you program against:
 
@@ -26,6 +35,10 @@ The pieces of the game you program against:
 - **The controller** is the heart of a room. Feeding it energy raises the room control level (RCL), from 1 to 8, and each level unlocks more extensions, towers at RCL 3, storage at RCL 4, and so on ([control documentation](https://docs.screeps.com/control.html)). Reserving the controller of a neighboring room keeps its sources at full capacity without owning it.
 - **CPU** is the real resource limit. Each tick, your script has a CPU budget in milliseconds, with a bucket that stores unused time for occasional bursts ([CPU limit documentation](https://docs.screeps.com/cpu-limit.html)). An AI that calls `room.find()` everywhere eventually pays for it.
 - **Memory** is a global JSON object saved between ticks. It is the only thing that persists from one tick to the next, so every bit of state your AI needs (a creep's role, its current task, a cached path) has to live there, in serializable form.
+
+![Diagram of the CPU bucket: unused CPU accumulates each tick, up to 10,000, and up to 500 can be spent from it in a single tick](/images/blog/screeps-ai/cpu-bucket.webp)
+
+*Image: © Screeps, LLC, from the [Screeps documentation](https://docs.screeps.com/cpu-limit.html).*
 
 What makes it interesting for a programmer is that every RTS problem becomes an engineering problem: logistics, build orders, scaling, error handling, and doing all of it within a CPU budget, in a world where other players' code is trying to do the same thing next door. I have written RTS prototypes before ([RTS Prototype](/blog/rts)); this time the AI *is* the player.
 
@@ -97,6 +110,10 @@ else                            // RCL 3+
 
 The RCL 3 harvester costs exactly 800 energy and has six `WORK` parts: five to keep up with the source's 10 energy per tick, one to spare for repairs. It only has two `MOVE` parts because it walks once in its life. The first line handles the worst case: if every harvester is dead, the room no longer refills its extensions, so waiting for full capacity would deadlock the colony. In that case the spawn builds whatever it can afford right now.
 
+![Diagram of how creep body parts appear in game: Work, Attack, Ranged Attack, Heal, Tough and Move, plus the energy the creep carries](/images/blog/screeps-ai/body-parts.webp)
+
+*Image: © Screeps, LLC, from the [Screeps documentation](https://docs.screeps.com/creeps.html).*
+
 Once at its source, a harvester is a two-state machine (`harvest` and `drop`). When full, it looks for a container within two tiles and remembers its id. If the container is damaged and has energy in it, or is close to collapsing, the harvester repairs it with its own energy; otherwise it transfers into it and keeps harvesting in the same tick. If there is no container, it drops the energy on the ground. And if the room has no hauler at all, typically right after a restart, the harvester carries the energy to the spawn itself until haulers exist.
 
 Haulers do the rest. A hauler first picks up dropped energy within three tiles, then withdraws from its source's container, then delivers to the closest spawn or extension that isn't full, to the container next to the controller, or to a tower, with storage as the default. Their body is `[CARRY, CARRY, MOVE]` repeated: an empty `CARRY` part generates no fatigue and roads halve the cost of the full ones, so one `MOVE` for two `CARRY` is enough on roads. One rule is a deliberate safety: towers are only refilled when the room has at least two haulers, so a lone hauler never starves the spawn to fill a tower.
@@ -130,6 +147,10 @@ There are also two more aggressive roles: a "thief" that empties the spawn and e
 ## Defense
 
 Every tick, each visible room checks for hostile creeps. If the room is within one room of a main room, it is marked as invaded in memory, with the position of the first hostile. Three things react to that flag:
+
+![A battle around a base, with lines showing attacks between structures and creeps](/images/blog/screeps-ai/tower-defense.webp)
+
+*Image: © Screeps, LLC, from the [Screeps: World Steam page](https://store.steampowered.com/app/464350/Screeps_World/).*
 
 - remote harvesting is suspended: `getAvailableSource` skips sources in invaded rooms, so no new harvester or hauler is sent to die there;
 - the nearest main room spawns a **protector**, an `ATTACK`/`MOVE` body sized to the room's energy, which walks to the reported position, fights, and once the room is clear deletes the invasion marker and goes back to be recycled;
