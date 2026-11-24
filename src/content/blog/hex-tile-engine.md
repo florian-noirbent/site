@@ -9,9 +9,12 @@ tags:
   - "C#"
   - "Procedural mesh"
   - "Tools"
+cardImage: /images/blog/hex-tile-engine/island-river.webp
 ---
 
 In spring 2015 I wrote a hexagonal tile engine for Unity: a component that turns a grid of hexagons, each with a terrain type and a height, into 3D meshes, plus the editor tooling to paint that map directly in the scene view. I put it on GitHub in December and upgraded it from Unity 5.2 to Unity 2018.3 this week, so it is a good moment to describe how it works and where it stopped.
+
+![A hexagonal island painted with the engine: water, beach, grass, dirt and raised rocky outcrops](/images/blog/hex-tile-engine/island-rocks.webp)
 
 The code is here: [HexTileEngine on GitHub](https://github.com/florian-noirbent/HexTileEngine).
 
@@ -74,6 +77,8 @@ Each tile adds its own geometry to its chunk's mesh data:
 - **The sides** are only generated on faces that can be seen: when the neighbour is lower or missing. Each side goes down to the neighbour's height, or 10 units below zero on the map's border.
 - **The edge** is an optional band at the top of the cliff with its own material, used as a transition between the grass on top and the rock on the side. A `SizeMultiplier` below 1 shrinks the top face, which turns that band into a bevel.
 
+![Terrain types at different heights, with the wireframe showing one chunk mesh: hexagon tops as triangle fans and cliff sides only where a neighbour is lower](/images/blog/hex-tile-engine/terrain-heights.webp)
+
 ```csharp
 bool IsSideVisible(Hexagon neighbour, HexagonTypeData types)
 {
@@ -83,6 +88,8 @@ bool IsSideVisible(Hexagon neighbour, HexagonTypeData types)
 ```
 
 The bevel took three commits, "Edge fix 1" to "Edge fix 3". A top vertex is pulled inward only when the two faces it touches are both visible. When just one of them is, the vertex has to slide along the hidden side to meet the neighbouring tile, otherwise you get gaps or spikes at inner corners. `ComputeVertexRelativePosition` handles those four cases.
+
+![Stepped terraces climbing to a rocky peak, each level ending in a beveled cliff edge](/images/blog/hex-tile-engine/island-terraces.webp)
 
 ### Materials and UVs
 
@@ -98,6 +105,8 @@ For the sides, the bottom UV depends on the height of the cliff:
 
 so the rock texture repeats along a tall cliff instead of stretching. Vertices also get a color (white for now), and the custom `HexaShader` multiplies the albedo by it, ready for per-tile tinting such as highlighting reachable tiles. Normals come from `Mesh.RecalculateNormals()`.
 
+![Textured terrain in the scene view: water, sand and grass tops, with the edge material outlining each cliff](/images/blog/hex-tile-engine/textured-cliffs.webp)
+
 ## Editor tooling
 
 Most of the work went into making this usable without writing code:
@@ -108,11 +117,15 @@ Most of the work went into making this usable without writing code:
 
 When edit mode is on, `OnSceneGUI` takes over mouse input in the scene view: it casts a ray from the mouse onto the ground plane, converts the hit point to a tile and edits it. When dragging, it paints along a line between the previous and the current mouse positions, so a fast stroke does not leave holes. Every edit marks the containing chunk as dirty, and only dirty chunks are rebuilt.
 
+![Testing the brush: freehand strokes and a smiley face painted tile by tile on a large hexagonal map](/images/blog/hex-tile-engine/painting-test.webp)
+
 Map data is a ScriptableObject because it survives editor restarts and script reloads. The first version saved the array with `BinaryFormatter` to a `.hex` file; that code is still in the repository, commented out. Another 2015 commit message reads "Fix hot reload of C# assemblies in editor (awake => onEnabled)": with `[ExecuteInEditMode]` components, `Awake` is not called again after a script recompile, but `OnEnable` is, so event bindings and mesh references have to be restored there.
 
 ## Where it stopped
 
 The engine does what I first set out to do: you create a map, define terrain types and paint a 3D hex landscape with cliffs and beveled edges in a few minutes. The known gaps are clear from the code:
+
+![A painted island with a river cutting through the grass terraces between rocky outcrops](/images/blog/hex-tile-engine/island-river.webp)
 
 - **Picking uses the ground plane**, not the terrain. On high tiles, the brush lands on a different tile than the one under the cursor.
 - **Chunk borders**: editing a tile only dirties its own chunk, but a height change also changes its neighbour's cliffs. A neighbour in the next chunk stays stale until a full rebuild.
