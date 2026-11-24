@@ -1,0 +1,46 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import BlogCard from "../../components/BlogCard.astro";
+import BlogFilters from "../../components/BlogFilters.astro";
+import CardGrid from "../../components/CardGrid.astro";
+import { getPosts, getTagIndex } from "../../lib/blog";
+import { isoDate } from "../../lib/format";
+import { slugifyTag } from "../../lib/tags";
+import { BLOG_TYPE_KEYS } from "../../config/site";
+
+const posts = await getPosts();
+const tags = getTagIndex(posts);
+const usedTypes = BLOG_TYPE_KEYS.filter((type) => posts.some((post) => post.data.type === type));
+---
+
+<BaseLayout title="Blog | Titan" description="Articles on game development, technical systems and game design by Titan.">
+  <section>
+    <h1 class="text-3xl font-extrabold sm:text-4xl">Blog</h1>
+    <p class="mt-4 max-w-3xl text-slate-700 dark:text-slate-300">
+      Technical deep dives, design notes and devlogs from the games I build.
+    </p>
+  </section>
+
+  <div class="mt-8">
+    <BlogFilters tags={tags} types={usedTypes} total={posts.length} />
+  </div>
+
+  <CardGrid as="ul" columns={3} class="mt-8" data-post-list>
+    {
+      posts.map((post) => (
+        <li
+          data-post
+          data-tags={post.data.tags.map(slugifyTag).join(" ")}
+          data-type={post.data.type}
+          data-date={isoDate(post.data.date)}
+        >
+          <BlogCard post={post} />
+        </li>
+      ))
+    }
+  </CardGrid>
+
+  <p class="surface mt-8 text-center text-slate-600 dark:text-slate-400" data-post-empty hidden>
+    No article matches these filters.
+  </p>
+</BaseLayout>

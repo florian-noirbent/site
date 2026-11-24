@@ -8,13 +8,15 @@ interface Props {
   description?: string;
   image?: string;
   noindex?: boolean;
+  ogType?: "website" | "article";
 }
 
 const {
   title = "Titan - game developer",
   description = "Titan builds real-time destruction systems and gameplay tooling focused on runtime geometry, performance, and reliable content workflows.",
   image = "/images/window-fracture-cover.png",
-  noindex = false
+  noindex = false,
+  ogType = "website"
 } = Astro.props;
 
 const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://titan.nofl.uk").toString();
@@ -31,7 +33,7 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://titan.nofl.
     <link rel="icon" type="image/png" sizes="64x64" href="/favicon.png" />
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content={ogType} />
     <meta property="og:site_name" content="Titan" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />

@@ -1,0 +1,146 @@
+---
+/**
+ * Client-side filters for a list of posts. Filters any element marked
+ * `data-post` inside `[data-post-list]`, using its `data-tags` (space-separated
+ * tag keys), `data-type` and `data-date` (YYYY-MM-DD) attributes. The state is
+ * mirrored in the URL query (see BLOG_FILTER_PARAMS) so filtered views can be linked.
+ */
+import { BLOG_FILTER_PARAMS, BLOG_TYPES } from "../config/site";
+
+interface Props {
+  tags: { key: string; label: string; count: number }[];
+  types: (keyof typeof BLOG_TYPES)[];
+  total: number;
+}
+
+const { tags, types, total } = Astro.props;
+const P = BLOG_FILTER_PARAMS;
+const fieldClass =
+  "w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm text-slate-900 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100";
+const labelClass = "mb-1.5 block text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400";
+---
+
+<form class="surface space-y-5" data-blog-filters aria-label="Filter articles">
+  <fieldset>
+    <legend class={labelClass}>Tags</legend>
+    <div class="flex flex-wrap gap-2">
+      {
+        tags.map((tag) => (
+          <label class="cursor-pointer rounded-full border border-slate-200 bg-slate-100 px-3 py-1.5 text-xs font-medium text-slate-700 transition hover:border-cyan-400 has-[:checked]:border-cyan-600 has-[:checked]:bg-cyan-600 has-[:checked]:text-white has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-cyan-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:has-[:checked]:border-cyan-500 dark:has-[:checked]:bg-cyan-500 dark:has-[:checked]:text-slate-950">
+            <input type="checkbox" name={P.tag} value={tag.key} class="sr-only" />
+            {tag.label} <span class="opacity-70">({tag.count})</span>
+          </label>
+        ))
+      }
+    </div>
+  </fieldset>
+
+  <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+    <div>
+      <label for="blog-filter-type" class={labelClass}>Type</label>
+      <select id="blog-filter-type" name={P.type} class={fieldClass}>
+        <option value="">All types</option>
+        {types.map((type) => <option value={type}>{BLOG_TYPES[type]}</option>)}
+      </select>
+    </div>
+    <div>
+      <label for="blog-filter-from" class={labelClass}>From</label>
+      <input id="blog-filter-from" type="date" name={P.from} class={fieldClass} />
+    </div>
+    <div>
+      <label for="blog-filter-to" class={labelClass}>To</label>
+      <input id="blog-filter-to" type="date" name={P.to} class={fieldClass} />
+    </div>
+    <div>
+      <label for="blog-filter-sort" class={labelClass}>Sort</label>
+      <select id="blog-filter-sort" name={P.sort} class={fieldClass}>
+        <option value="newest">Newest first</option>
+        <option value="oldest">Oldest first</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-3">
+    <p class="text-sm text-slate-600 dark:text-slate-400" data-filter-count aria-live="polite">
+      {total} {total === 1 ? "article" : "articles"}
+    </p>
+    <button type="reset" class="button-secondary px-3 py-1.5 text-sm">Clear filters</button>
+  </div>
+</form>
+
+<script>
+  import { BLOG_FILTER_PARAMS as P } from "../config/site";
+
+  const form = document.querySelector<HTMLFormElement>("[data-blog-filters]");
+  const list = document.querySelector<HTMLElement>("[data-post-list]");
+  const empty = document.querySelector<HTMLElement>("[data-post-empty]");
+  const count = form?.querySelector<HTMLElement>("[data-filter-count]");
+
+  if (form && list) {
+    const items = [...list.querySelectorAll<HTMLElement>("[data-post]")];
+    const field = (name: string) => form.elements.namedItem(name) as HTMLInputElement | HTMLSelectElement | null;
+    const tagBoxes = [...form.querySelectorAll<HTMLInputElement>(`input[name="${P.tag}"]`)];
+
+    const readForm = () => ({
+      tags: tagBoxes.filter((box) => box.checked).map((box) => box.value),
+      type: field(P.type)?.value ?? "",
+      from: field(P.from)?.value ?? "",
+      to: field(P.to)?.value ?? "",
+      sort: field(P.sort)?.value ?? "newest"
+    });
+
+    const writeForm = (params: URLSearchParams) => {
+      const tags = params.getAll(P.tag);
+      tagBoxes.forEach((box) => (box.checked = tags.includes(box.value)));
+      for (const name of [P.type, P.from, P.to, P.sort]) {
+        const input = field(name);
+        const value = params.get(name);
+        if (input && value !== null) input.value = value;
+      }
+    };
+
+    const syncUrl = (state: ReturnType<typeof readForm>) => {
+      const params = new URLSearchParams();
+      state.tags.forEach((tag) => params.append(P.tag, tag));
+      if (state.type) params.set(P.type, state.type);
+      if (state.from) params.set(P.from, state.from);
+      if (state.to) params.set(P.to, state.to);
+      if (state.sort !== "newest") params.set(P.sort, state.sort);
+      const query = params.toString();
+      history.replaceState(null, "", query ? `?${query}` : location.pathname);
+    };
+
+    const apply = () => {
+      const state = readForm();
+      let visible = 0;
+      for (const item of items) {
+        const itemTags = (item.dataset.tags ?? "").split(" ");
+        const date = item.dataset.date ?? "";
+        const show =
+          (state.tags.length === 0 || state.tags.some((tag) => itemTags.includes(tag))) &&
+          (!state.type || item.dataset.type === state.type) &&
+          (!state.from || date >= state.from) &&
+          (!state.to || date <= state.to);
+        item.hidden = !show;
+        if (show) visible += 1;
+      }
+
+      const direction = state.sort === "oldest" ? 1 : -1;
+      items
+        .slice()
+        .sort((a, b) => direction * (a.dataset.date ?? "").localeCompare(b.dataset.date ?? ""))
+        .forEach((item) => list.appendChild(item));
+
+      if (count) count.textContent = `${visible} ${visible === 1 ? "article" : "articles"}`;
+      if (empty) empty.hidden = visible > 0;
+      syncUrl(state);
+    };
+
+    writeForm(new URLSearchParams(location.search));
+    apply();
+    form.addEventListener("input", apply);
+    form.addEventListener("change", apply);
+    form.addEventListener("reset", () => requestAnimationFrame(apply));
+    form.addEventListener("submit", (event) => event.preventDefault());
+  }
+</script>

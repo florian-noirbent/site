@@ -1,0 +1,27 @@
+---
+import BlogCard from "./BlogCard.astro";
+import CardGrid from "./CardGrid.astro";
+import SectionHeading from "./SectionHeading.astro";
+import type { Post } from "../lib/blog";
+
+interface Props {
+  posts: Post[];
+  title?: string;
+  link?: { href: string; label: string };
+}
+
+const { posts, title, link } = Astro.props;
+---
+
+{
+  posts.length > 0 && (
+    <section>
+      {title && <SectionHeading title={title} link={link} />}
+      <CardGrid columns={3}>
+        {posts.map((post) => (
+          <BlogCard post={post} />
+        ))}
+      </CardGrid>
+    </section>
+  )
+}

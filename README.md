@@ -30,3 +30,4 @@ npm run preview
 - Dark mode is class-based and persisted in `localStorage`.
 - No tracking or analytics are enabled by default.
 - Game placeholder generation workflow is documented in `docs/game-placeholders.md`.
+- Blog posts, game links and game page groups are documented in `docs/blog-and-game-links.md`.

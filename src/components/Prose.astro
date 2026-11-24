@@ -1,0 +1,30 @@
+---
+/** Typography for rendered Markdown content (games, assets, blog posts). */
+---
+
+<div
+  class:list={[
+    "surface",
+    "space-y-6",
+    "[&_h2]:text-2xl [&_h2]:font-bold [&_h2]:pt-2",
+    "[&_h3]:text-xl [&_h3]:font-semibold",
+    "[&_p]:leading-7 [&_p]:text-slate-700 dark:[&_p]:text-slate-300",
+    "[&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5",
+    "[&_ol]:list-decimal [&_ol]:space-y-2 [&_ol]:pl-5",
+    "[&_li]:text-slate-700 dark:[&_li]:text-slate-300",
+    "[&_strong]:font-semibold [&_strong]:text-slate-900 dark:[&_strong]:text-slate-100",
+    "[&_code]:rounded [&_code]:bg-slate-100 [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:font-mono [&_code]:text-[0.9em] dark:[&_code]:bg-slate-800",
+    "[&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:p-4 [&_pre_code]:bg-transparent [&_pre_code]:p-0",
+    "[&_blockquote]:border-l-4 [&_blockquote]:border-cyan-400 [&_blockquote]:pl-4 [&_blockquote]:italic",
+    "[&_hr]:border-slate-200 dark:[&_hr]:border-slate-700",
+    "[&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-xl [&_table]:border [&_table]:border-slate-200 dark:[&_table]:border-slate-700",
+    "[&_th]:bg-slate-100 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-sm [&_th]:font-semibold dark:[&_th]:bg-slate-800",
+    "[&_td]:border-t [&_td]:border-slate-200 [&_td]:px-3 [&_td]:py-2 [&_td]:text-sm dark:[&_td]:border-slate-700",
+    "[&_a]:text-cyan-700 [&_a]:underline-offset-4 hover:[&_a]:underline dark:[&_a]:text-cyan-300",
+    "[&_img]:w-full [&_img]:rounded-xl [&_img]:border [&_img]:border-slate-200 dark:[&_img]:border-slate-700",
+    "[&_.media-grid]:grid [&_.media-grid]:gap-4 md:[&_.media-grid]:grid-cols-2",
+    "[&_iframe]:aspect-video [&_iframe]:w-full [&_iframe]:rounded-xl [&_iframe]:border [&_iframe]:border-slate-200 dark:[&_iframe]:border-slate-700"
+  ]}
+>
+  <slot />
+</div>

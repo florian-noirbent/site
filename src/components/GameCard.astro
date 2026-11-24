@@ -1,43 +1,19 @@
 ---
 import Tag from "./Tag.astro";
+import StatusBadge from "./StatusBadge.astro";
+import { gameUrl, type Game } from "../lib/games";
+import { formatMonthYear } from "../lib/format";
 
 interface Props {
-  title: string;
-  description: string;
-  href: string;
-  image: string;
-  dateLabel: string;
-  engine: string;
-  platforms: string[];
-  status: "released" | "unreleased";
-  cardStyle?: "cover" | "icon";
-  highlighted?: boolean;
-  supremapp?: boolean;
+  game: Game;
 }
 
-const {
-  title,
-  description,
-  href,
-  image,
-  dateLabel,
-  engine,
-  platforms,
-  status,
-  cardStyle = "cover",
-  highlighted = false,
-  supremapp = false
-} = Astro.props;
-
-const statusLabel = status === "released" ? "Released" : "Unreleased";
-const statusClass =
-  status === "released"
-    ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"
-    : "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200";
+const { game } = Astro.props;
+const { title, description, cardImage, date, engine, platforms, status, cardStyle, highlighted, supremapp } = game.data;
 ---
 
 <a
-  href={href}
+  href={gameUrl(game)}
   class:list={[
     "surface group block h-full transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-md dark:hover:border-cyan-700",
     highlighted &&
@@ -47,13 +23,11 @@ const statusClass =
   <article class="flex h-full flex-col gap-4">
     <div class="relative">
       <img
-        src={image}
-        alt={`${title} placeholder image`}
+        src={cardImage}
+        alt={`${title} cover image`}
         class:list={[
           "h-44 w-full rounded-xl border border-slate-200 dark:border-slate-700",
-          cardStyle === "icon"
-            ? "bg-slate-100 p-3 object-contain dark:bg-slate-800"
-            : "object-cover"
+          cardStyle === "icon" ? "bg-slate-100 p-3 object-contain dark:bg-slate-800" : "object-cover"
         ]}
         loading="lazy"
       />
@@ -70,7 +44,7 @@ const statusClass =
     </div>
 
     <div class="flex items-center justify-between gap-4">
-      <h2 class="text-lg font-bold text-slate-900 dark:text-slate-100">
+      <h3 class="text-lg font-bold text-slate-900 dark:text-slate-100">
         {title}
         {
           highlighted && (
@@ -79,14 +53,14 @@ const statusClass =
             </span>
           )
         }
-      </h2>
-      <span class:list={["rounded-full px-2.5 py-1 text-xs font-semibold", statusClass]}>{statusLabel}</span>
+      </h3>
+      <StatusBadge status={status} />
     </div>
 
     <p class="text-sm text-slate-700 dark:text-slate-300">{description}</p>
 
     <dl class="grid grid-cols-1 gap-1 text-xs text-slate-600 dark:text-slate-400">
-      <div><dt class="inline font-semibold">Release:</dt> <dd class="inline">{dateLabel}</dd></div>
+      <div><dt class="inline font-semibold">Release:</dt> <dd class="inline">{formatMonthYear(date)}</dd></div>
       <div><dt class="inline font-semibold">Engine:</dt> <dd class="inline">{engine}</dd></div>
     </dl>
 

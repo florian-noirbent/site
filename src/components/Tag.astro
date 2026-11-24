@@ -1,11 +1,20 @@
 ---
 interface Props {
   label: string;
+  /** When set, the tag renders as a link (e.g. to a filtered blog list). */
+  href?: string;
 }
 
-const { label } = Astro.props;
+const { label, href } = Astro.props;
+const Element = href ? "a" : "span";
 ---
 
-<span class="rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
+<Element
+  href={href}
+  class:list={[
+    "rounded-full border border-slate-200 bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200",
+    href && "transition hover:border-cyan-400 hover:text-cyan-700 dark:hover:border-cyan-500 dark:hover:text-cyan-300"
+  ]}
+>
   {label}
-</span>
+</Element>

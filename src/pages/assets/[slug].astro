@@ -2,6 +2,7 @@
 import { getCollection, render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import Tag from "../../components/Tag.astro";
+import Prose from "../../components/Prose.astro";
 
 export async function getStaticPaths() {
   const assets = await getCollection("assets");
@@ -62,24 +63,8 @@ const storeLabel = asset.data.storeLabel || "View in store";
       </div>
     </header>
 
-    <div
-      class:list={[
-        "surface",
-        "space-y-6",
-        "[&_h2]:text-2xl [&_h2]:font-bold",
-        "[&_h3]:text-xl [&_h3]:font-semibold",
-        "[&_p]:leading-7 [&_p]:text-slate-700 dark:[&_p]:text-slate-300",
-        "[&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5",
-        "[&_li]:text-slate-700 dark:[&_li]:text-slate-300",
-        "[&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-xl [&_table]:border [&_table]:border-slate-200 dark:[&_table]:border-slate-700",
-        "[&_th]:bg-slate-100 [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:text-sm [&_th]:font-semibold dark:[&_th]:bg-slate-800",
-        "[&_td]:border-t [&_td]:border-slate-200 [&_td]:px-3 [&_td]:py-2 [&_td]:text-sm dark:[&_td]:border-slate-700",
-        "[&_a]:text-cyan-700 [&_a]:underline-offset-4 hover:[&_a]:underline dark:[&_a]:text-cyan-300",
-        "[&_img]:w-full [&_img]:rounded-xl [&_img]:border [&_img]:border-slate-200 dark:[&_img]:border-slate-700",
-        "[&_iframe]:aspect-video [&_iframe]:w-full [&_iframe]:rounded-xl [&_iframe]:border [&_iframe]:border-slate-200 dark:[&_iframe]:border-slate-700"
-      ]}
-    >
+    <Prose>
       <Content />
-    </div>
+    </Prose>
   </article>
 </BaseLayout>

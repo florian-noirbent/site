@@ -1,0 +1,27 @@
+---
+import CardGrid from "./CardGrid.astro";
+import GameCard from "./GameCard.astro";
+import SectionHeading from "./SectionHeading.astro";
+import type { Game } from "../lib/games";
+
+interface Props {
+  games: Game[];
+  title?: string;
+  link?: { href: string; label: string };
+}
+
+const { games, title, link } = Astro.props;
+---
+
+{
+  games.length > 0 && (
+    <section>
+      {title && <SectionHeading title={title} link={link} />}
+      <CardGrid>
+        {games.map((game) => (
+          <GameCard game={game} />
+        ))}
+      </CardGrid>
+    </section>
+  )
+}

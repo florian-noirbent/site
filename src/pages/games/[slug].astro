@@ -1,9 +1,16 @@
 ---
-import { getCollection, render } from "astro:content";
+import { render } from "astro:content";
 import BaseLayout from "../../layouts/BaseLayout.astro";
+import LinkButtons from "../../components/LinkButtons.astro";
+import PostGrid from "../../components/PostGrid.astro";
+import Prose from "../../components/Prose.astro";
+import { getGameLinks, getGames } from "../../lib/games";
+import { getPostsForGame, tagUrl } from "../../lib/blog";
+import { formatMonthYear } from "../../lib/format";
+import { ROUTES } from "../../config/site";
 
 export async function getStaticPaths() {
-  const games = await getCollection("games");
+  const games = await getGames();
   return games.map((game) => ({
     params: { slug: game.slug },
     props: { game }
@@ -13,16 +20,15 @@ export async function getStaticPaths() {
 const { game } = Astro.props;
 const { Content } = await render(game);
 
-const dateLabel = new Intl.DateTimeFormat("en-US", {
-  month: "long",
-  year: "numeric"
-}).format(game.data.date);
+const dateLabel = formatMonthYear(game.data.date, "long");
+const links = getGameLinks(game);
+const posts = await getPostsForGame(game);
 
 const statusLabel = game.data.status === "released" ? "Released" : "Unreleased";
 ---
 
 <BaseLayout title={`${game.data.title} | Games | Titan`} description={game.data.description} image={game.data.cardImage}>
-  <a class="button-secondary mb-6 inline-flex" href="/games">Back to Games</a>
+  <a class="button-secondary mb-6 inline-flex" href={ROUTES.games}>Back to Games</a>
 
   <article class="space-y-8">
     <header class="surface">
@@ -68,7 +74,7 @@ const statusLabel = game.data.status === "released" ? "Released" : "Unreleased";
         <div class="w-full">
           <img
             src={game.data.cardImage}
-            alt={`${game.data.title} placeholder image`}
+            alt={`${game.data.title} cover image`}
             class="w-full rounded-xl border border-slate-200 object-cover dark:border-slate-700"
             loading="lazy"
           />
@@ -84,38 +90,23 @@ const statusLabel = game.data.status === "released" ? "Released" : "Unreleased";
         }
       </div>
       {
-        game.data.accessUrl && (
-          <div class="mt-6 flex justify-center">
-            <a
-              href={game.data.accessUrl}
-              class="button-primary inline-flex w-full max-w-md justify-center px-6 py-3 text-base sm:min-w-[22rem] sm:w-auto"
-              target="_blank"
-              rel="noreferrer noopener"
-            >
-              {game.data.accessLabel ?? "Access game"}
-            </a>
+        links.length > 0 && (
+          <div class="mt-6">
+            <LinkButtons links={links} />
           </div>
         )
       }
     </header>
 
-    <div
-      class:list={[
-        "surface",
-        "space-y-6",
-        "[&_h2]:text-2xl [&_h2]:font-bold",
-        "[&_h3]:text-xl [&_h3]:font-semibold",
-        "[&_p]:leading-7 [&_p]:text-slate-700 dark:[&_p]:text-slate-300",
-        "[&_ul]:list-disc [&_ul]:space-y-2 [&_ul]:pl-5",
-        "[&_li]:text-slate-700 dark:[&_li]:text-slate-300",
-        "[&_a]:text-cyan-700 [&_a]:underline-offset-4 hover:[&_a]:underline dark:[&_a]:text-cyan-300",
-        "[&_img]:w-full [&_img]:rounded-xl [&_img]:border [&_img]:border-slate-200 dark:[&_img]:border-slate-700",
-        "[&_.media-grid]:grid [&_.media-grid]:gap-4 md:[&_.media-grid]:grid-cols-2",
-        "[&_iframe]:aspect-video [&_iframe]:w-full [&_iframe]:rounded-xl [&_iframe]:border [&_iframe]:border-slate-200 dark:[&_iframe]:border-slate-700"
-      ]}
-    >
+    <Prose>
       <Content />
-    </div>
+    </Prose>
+
+    <PostGrid
+      title="Blog posts"
+      posts={posts}
+      link={{ href: tagUrl(game.slug), label: "Open in blog" }}
+    />
   </article>
 
   <script is:inline>

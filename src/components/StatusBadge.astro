@@ -1,0 +1,20 @@
+---
+interface Props {
+  status: "released" | "unreleased";
+}
+
+const STATUS = {
+  released: {
+    label: "Released",
+    class: "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/50 dark:text-emerald-200"
+  },
+  unreleased: {
+    label: "Unreleased",
+    class: "bg-amber-100 text-amber-800 dark:bg-amber-950/50 dark:text-amber-200"
+  }
+} as const;
+
+const { label, class: className } = STATUS[Astro.props.status];
+---
+
+<span class:list={["rounded-full px-2.5 py-1 text-xs font-semibold", className]}>{label}</span>

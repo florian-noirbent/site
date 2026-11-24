@@ -1,0 +1,68 @@
+---
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import Prose from "../../components/Prose.astro";
+import Tag from "../../components/Tag.astro";
+import { getPosts, postTypeLabel, postHasTag, tagUrl } from "../../lib/blog";
+import { gameUrl, getGames } from "../../lib/games";
+import { formatDate, isoDate } from "../../lib/format";
+import { ROUTES } from "../../config/site";
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({
+    params: { slug: post.slug },
+    props: { post }
+  }));
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, date, tags, cardImage, crossPostUrl } = post.data;
+const relatedGames = (await getGames()).filter((game) => postHasTag(post, game.slug));
+---
+
+<BaseLayout title={`${title} | Blog | Titan`} description={description} image={cardImage} ogType="article">
+  <a class="button-secondary mb-6 inline-flex" href={ROUTES.blog}>Back to Blog</a>
+
+  <article class="space-y-8">
+    <header class="surface">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-wide">
+        <span class="text-cyan-700 dark:text-cyan-300">{postTypeLabel(post)}</span>
+        <time datetime={isoDate(date)} class="text-slate-500 dark:text-slate-400">{formatDate(date)}</time>
+      </div>
+      <h1 class="mt-3 text-3xl font-extrabold sm:text-4xl">{title}</h1>
+      <p class="mt-4 max-w-3xl text-slate-700 dark:text-slate-300">{description}</p>
+
+      <div class="mt-6 flex flex-wrap gap-2">
+        {tags.map((tag) => <Tag label={tag} href={tagUrl(tag)} />)}
+      </div>
+
+      {
+        (relatedGames.length > 0 || crossPostUrl) && (
+          <div class="mt-6 flex flex-wrap gap-x-6 gap-y-2 text-sm">
+            {relatedGames.map((game) => (
+              <a class="font-semibold text-cyan-700 hover:underline dark:text-cyan-300" href={gameUrl(game)}>
+                About the game: {game.data.title}
+              </a>
+            ))}
+            {crossPostUrl && (
+              <a
+                class="font-semibold text-cyan-700 hover:underline dark:text-cyan-300"
+                href={crossPostUrl}
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                Also published on {new URL(crossPostUrl).hostname}
+              </a>
+            )}
+          </div>
+        )
+      }
+    </header>
+
+    <Prose>
+      <Content />
+    </Prose>
+  </article>
+</BaseLayout>

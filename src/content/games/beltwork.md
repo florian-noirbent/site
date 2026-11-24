@@ -9,8 +9,8 @@ platforms:
 engine: React + Fastify (TypeScript)
 genre: Cozy automation / idle
 releaseNote: In development.
-accessUrl: https://github.com/florian-noirbent/beltwork
-accessLabel: View source on GitHub
+links:
+  source: https://github.com/florian-noirbent/beltwork
 ---
 
 ## Overview

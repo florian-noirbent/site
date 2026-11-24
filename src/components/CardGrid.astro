@@ -1,0 +1,15 @@
+---
+import type { HTMLAttributes } from "astro/types";
+
+interface Props extends HTMLAttributes<"div"> {
+  columns?: 2 | 3;
+  /** Render as a list when the children are `<li>` elements. */
+  as?: "div" | "ul";
+}
+
+const { columns = 2, as: Element = "div", class: className, ...attrs } = Astro.props;
+---
+
+<Element class:list={["grid gap-5 md:grid-cols-2", columns === 3 && "lg:grid-cols-3", className]} {...attrs}>
+  <slot />
+</Element>

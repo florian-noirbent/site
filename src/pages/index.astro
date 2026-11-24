@@ -1,25 +1,22 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
+import CardGrid from "../components/CardGrid.astro";
+import GameGrid from "../components/GameGrid.astro";
+import PostGrid from "../components/PostGrid.astro";
 import ProjectCard from "../components/ProjectCard.astro";
-import GameCard from "../components/GameCard.astro";
+import SectionHeading from "../components/SectionHeading.astro";
+import { getFeaturedGames } from "../lib/games";
+import { getRecentPosts } from "../lib/blog";
+import { byDateDesc } from "../lib/format";
+import { HOME, ROUTES } from "../config/site";
 
-const assets = await getCollection("assets");
-const featured = assets
-  .filter((asset) => asset.data.featured)
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-
-const featuredGames = (await getCollection("games"))
-  .filter((game) => game.data.featured)
-  .sort((a, b) => b.data.date.getTime() - a.data.date.getTime());
-
-const dateFormatter = new Intl.DateTimeFormat("en-US", {
-  month: "short",
-  year: "numeric"
-});
+const featuredAssets = (await getCollection("assets")).filter((asset) => asset.data.featured).sort(byDateDesc);
+const featuredGames = await getFeaturedGames();
+const recentPosts = await getRecentPosts(HOME.recentPostCount);
 ---
 
-<BaseLayout title="Titan" description="Home of Titan's portfolio, featured games and assets.">
+<BaseLayout title="Titan" description="Home of Titan's portfolio: featured games, articles and assets.">
   <section class="grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-stretch">
     <div class="surface flex h-full flex-col justify-center">
       <h1 class="text-4xl font-bold">
@@ -47,56 +44,29 @@ const dateFormatter = new Intl.DateTimeFormat("en-US", {
     </aside>
   </section>
 
-  {
-    featuredGames.length > 0 && (
-      <section class="mt-12">
-        <div class="mb-6 flex items-center justify-between gap-4">
-          <h2 class="text-2xl font-bold">Featured Games</h2>
-          <a class="text-sm font-semibold text-cyan-700 hover:underline dark:text-cyan-300" href="/games">
-            See all games
-          </a>
-        </div>
-        <div class="grid gap-5 md:grid-cols-2">
-          {featuredGames.map((game) => (
-            <GameCard
-              title={game.data.title}
-              description={game.data.description}
-              image={game.data.cardImage}
-              href={`/games/${game.slug}`}
-              dateLabel={dateFormatter.format(game.data.date)}
-              engine={game.data.engine}
-              platforms={game.data.platforms}
-              status={game.data.status}
-              cardStyle={game.data.cardStyle}
-              highlighted={game.data.highlighted}
-              supremapp={game.data.supremapp}
-            />
-          ))}
-        </div>
-      </section>
-    )
-  }
+  <div class="mt-12 space-y-12">
+    <GameGrid title="Featured Games" games={featuredGames} link={{ href: ROUTES.games, label: "See all games" }} />
 
-  <section class="mt-12">
-    <div class="mb-6 flex items-center justify-between gap-4">
-      <h2 class="text-2xl font-bold">Featured Assets</h2>
-      <a class="text-sm font-semibold text-cyan-700 hover:underline dark:text-cyan-300" href="/assets">
-        See all assets
-      </a>
-    </div>
-    <div class="grid gap-5 md:grid-cols-2">
-      {
-        featured.map((asset) => (
-          <ProjectCard
-            title={asset.data.title}
-            description={asset.data.description}
-            image={asset.data.cardImage}
-            tags={asset.data.tags}
-            href={`/assets/${asset.slug}`}
-            status={asset.data.status}
-          />
-        ))
-      }
-    </div>
-  </section>
+    <PostGrid title="Recent Articles" posts={recentPosts} link={{ href: ROUTES.blog, label: "See all articles" }} />
+
+    {
+      featuredAssets.length > 0 && (
+        <section>
+          <SectionHeading title="Featured Assets" link={{ href: ROUTES.assets, label: "See all assets" }} />
+          <CardGrid>
+            {featuredAssets.map((asset) => (
+              <ProjectCard
+                title={asset.data.title}
+                description={asset.data.description}
+                image={asset.data.cardImage}
+                tags={asset.data.tags}
+                href={`${ROUTES.assets}/${asset.slug}`}
+                status={asset.data.status}
+              />
+            ))}
+          </CardGrid>
+        </section>
+      )
+    }
+  </div>
 </BaseLayout>

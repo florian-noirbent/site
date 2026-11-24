@@ -1,18 +1,13 @@
 ---
+import { NAV_LINKS } from "../config/site";
+
 interface Props {
   currentPath: string;
 }
 
 const { currentPath } = Astro.props;
 
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/assets", label: "Assets" },
-  { href: "/games", label: "Games" },
-  { href: "/art", label: "Art" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" }
-];
+const links = NAV_LINKS;
 
 const isActive = (href: string) =>
   href === "/"

@@ -1,0 +1,28 @@
+---
+interface Props {
+  links: { label: string; url: string; primary: boolean }[];
+}
+
+const { links } = Astro.props;
+---
+
+{
+  links.length > 0 && (
+    <div class="flex flex-wrap justify-center gap-3">
+      {links.map((link) => (
+        <a
+          href={link.url}
+          class:list={[
+            link.primary ? "button-primary" : "button-secondary",
+            "min-w-40 px-6 py-3 text-base",
+            link.primary && "sm:min-w-56"
+          ]}
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  )
+}

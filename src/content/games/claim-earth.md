@@ -1,6 +1,6 @@
 ---
 title: "Claim Earth"
-description: "Cartoon arcade descent through a generated hex cave where water, lava, sand and gas flow in real time. Dig with bombs, swing on a grappling hook, and plant your flag before the cave gets you."
+description: "Dig deeper than your rivals through a living hex cave of sand, water, lava and gas, then plant your flag to claim your depth before the cave claims you."
 cardImage: /images/games/claim-earth/card.webp
 date: 2026-11-22
 status: released
@@ -9,30 +9,52 @@ platforms:
   - Windows
 engine: Godot 4.7
 genre: Arcade platformer
-releaseNote: Free to play in the browser on itch.io. Started as a game jam entry for the "Center of Earth" theme.
-accessUrl: https://titan-koyos.itch.io/claim-earth
-accessLabel: Play on itch.io
+releaseNote: Free to play in your browser. Started as a game jam entry for the "Center of Earth" theme.
+links:
+  play: https://florian-noirbent.github.io/claimEarth
+  itch: https://titan-koyos.itch.io/claim-earth
+  source: https://github.com/florian-noirbent/claimEarth
 featured: true
 ---
 
-## Overview
+## The claim
 
-Claim Earth is a small arcade game about going deeper than you should. You descend through a randomly generated hex cave, blasting through rock with bombs and swinging across gaps with a grappling hook. Your depth only counts once you throw your flag and it lands safely: die first, and the run is lost.
+You want to claim Earth for yourself. Descend through a generated underground world, dig deeper than your rivals, and plant a flag to lock in your depth.
 
-The cave is alive. Every bomb opens new paths for sand, water, lava, steam, acid and poisonous gas, so a single blast can turn into a flood, a steam pocket, or a brand new route down.
-
-- Generated caves with deterministic seeds
-- Bombs, grappling hook and loot chests with run-changing supplies
-- Permanent perks hidden in purple geodes
-- Online leaderboard for the deepest claimed flags
+Claim Earth is a physics-driven arcade game about risk and resource management. The cave is made of dirt, sand, stone, water, lava, gas and worse, and all of it moves. Bombs carve your route, a grappling hook carries you across the gaps, and your flag is the only way to bank the depth you reached. Die before it lands, and the run is gone.
 
 ## Trailer
 
 <iframe src="https://www.youtube-nocookie.com/embed/qJeOVA3A9LI" title="Claim Earth trailer" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-## Under the hood
+## Explore and survive
 
-The whole terrain lives in a single texture, four bytes per hex. GPU render passes run the cellular automaton that moves the materials, one shader draws the cave on a single quad, and custom collision code lets the player stand on the result. No terrain mesh or collider is ever rebuilt when the map changes.
+- Descend through generated hex terrain with responsive movement and a grappling hook.
+- Throw small and large bombs, dig tools, flares, bottles, and an excavator.
+- Survive lava, acid, suffocation, poison, falling terrain, steam, and sulfur dioxide.
+- Push explosive barrels into chain reactions, or haul them around with your hook.
+- Plant a flag to save your name and depth, then chase a higher personal or global score.
 
-- [Technical deep dive: Simulating, Rendering, and Colliding with a Texture](https://titan-koyos.itch.io/claim-earth/devlog/1799603/claim-earth-simulating-rendering-and-colliding-with-a-texture)
-- [Source code on GitHub](https://github.com/florian-noirbent/claimEarth)
+## Rewards and perks
+
+Item chests fall through the terrain and let you pick supplies for the run: bombs, charges, flares, utility bottles, or an excavator.
+
+Purple geodes offer a permanent, unique perk for the current run instead. Perks change how you move, survive, gather terrain, or use your items, and the ones you picked stay visible above your status.
+
+## Lifetime statistics
+
+The Statistics page tracks your runs, victories, planted flags, streaks, time played, depth traveled, deaths, chests and geodes, item use, perk choices, and what finally got you. Statistics stay on your device and are never sent to the leaderboard.
+
+## Controls
+
+| Input | Action |
+| --- | --- |
+| A / D | Move and swing |
+| Space | Jump |
+| W / S | Shorten or lengthen the grappling rope |
+| Right mouse | Grapple |
+| Left mouse | Aim and throw or use the selected item |
+| 1–8 | Select an inventory slot |
+| Esc | Pause |
+
+Keyboard and mouse are fully supported. Touch controls and gamepads work too, with fullscreen and frame-limiter settings.
