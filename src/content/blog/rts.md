@@ -1,6 +1,6 @@
 ---
-title: "RTS"
-description: "This time I'll talk about an RTS (real time strategy) I made with Unity at the end of my second year. Concept The game take place in a slightly futuristic world, where 2 human…"
+title: "RTS Prototype: Small Armies, Big Decisions"
+description: "A Unity real-time strategy prototype built at the end of my second year: micromanagement, units equipped at depots, two resources and a weapon tech tree."
 date: 2013-04-27
 type: devlog
 tags:
@@ -12,26 +12,28 @@ tags:
 cardImage: /images/blog/rts/RTS-prototype-1024x728.png
 ---
 
-This time I'll talk about an RTS (real time strategy) I made with Unity at the end of my second year.
+This time I'm presenting a real-time strategy (RTS) game I built with Unity at the end of my second year.
 
 ## Concept
 
-The game take place in a slightly futuristic world, where 2 human factions fight for the control of a extraterrestrial ship crash site. It's played with very few units (a player shouldn't be above around 30 units at the same time -with harvesters-) and focus on [micromanagement](http://en.wikipedia.org/wiki/Micromanagement_(gameplay)). The game is played on interiors, the first map is supposed to be at the top of a skyscraper, while the second is in an industrial area. the objective being to have games lasting from 10 to 20 minutes.
+The game is set in a slightly futuristic world where two human factions fight for control of the crash site of an alien ship. Armies stay small: a player shouldn't go much above 30 units at once, harvesters included, so the focus is on [micromanagement](http://en.wikipedia.org/wiki/Micromanagement_(gameplay)), the fine control of each individual unit in combat. The maps are enclosed spaces: the first one sits on top of a skyscraper, the second inside an industrial area. The target length of a match is 10 to 20 minutes.
 
-**The gameplay** is inspired from [populous](http://en.wikipedia.org/wiki/Populous:_The_Beginning)(1998) and [batlle realms](http://en.wikipedia.org/wiki/Battle_Realms)(2001): a command center spawn a base unit at regular time interval, which is extended with the number of unit in game, these appear unarmed and must equip themselves in different buildings: a weapon depot, an armor depot and a "special" depot. So the player must build it's units according to it's play style, for example the bazooka from the weapon depot is a powerful weapon, but it considerably slow the holder, then the player choose between an heavy armor that'll reduce it's speed even more, but make it an extremely dangerous unit, or choose to equip a light armor to catch up the rest of the army, in this case it's still powerful but fragile. the special depot hasn't been implemented, it was supposed to give additional skills to units like teleportation, speed life regeneration, etc.
+**Gameplay.** The core loop draws on [Populous: The Beginning](http://en.wikipedia.org/wiki/Populous:_The_Beginning) (1998) and [Battle Realms](http://en.wikipedia.org/wiki/Battle_Realms) (2001). A command center spawns a basic unit at regular intervals, and the interval grows with the number of units already in play. These units arrive unarmed and have to equip themselves at three buildings: a weapon depot, an armor depot and a "special" depot. Players therefore shape their army around their own play style. The bazooka from the weapon depot, for example, hits hard but slows its carrier considerably. Add heavy armor and the unit becomes even slower but extremely dangerous; pick light armor instead and it keeps pace with the rest of the army, still powerful but fragile. The special depot was never implemented: it was meant to grant extra abilities such as teleportation, speed or health regeneration.
 
-**The resources** ended as a mix between stacraft and warcraft III, which no longer need to be introduced. There is 2 resources type, to harvest them, the player just need to leave any unit near the deposits (I thought about adding a special capacity for that), every deposit is infinite, but has a maximum amount of harvesters. the common resource has a large deposit in the starting base and a medium just outside. the rare one is on small deposits far from the spawn. every deposits are protected by neutral (the alien if you follow), units attacking both players at sigh, some path to the enemy base are protected too.
+**Resources.** The economy ended up as a mix of StarCraft and Warcraft III, which hardly need an introduction. There are two resources. To harvest, a player simply leaves any unit near a deposit (I considered making harvesting a dedicated ability). Deposits never run dry, but each one accepts only a limited number of harvesters. The common resource has a large deposit inside the starting base and a medium one just outside. The rare resource comes from small deposits far from the spawn points. Every deposit is guarded by neutral units, the aliens, who attack both players on sight, and some of the routes to the enemy base are guarded as well.
 
-**The technologies tree**, is somewhat simple, there is 4 tiers of simple weapons and armors, that must be researched successively, once a weapon is unlocked, it's then necessary to buy it for each unit that want to equip it. simple weapons and armors only requires the common resource to be researched and bought, but for each tiers there is enhanced version that require the rare resources.
+**Tech tree.** The technology tree is deliberately simple: four tiers of basic weapons and armor, researched one after the other. Unlocking a weapon does not hand it out for free; it still has to be bought for each unit that wants to carry it. Basic weapons and armor cost only the common resource to research and buy, while every tier also has an enhanced version that requires the rare one.
 
-![RTS prototype](/images/blog/rts/RTS-prototype-1024x728.png)
+![Top-down view of the RTS prototype with units fighting on the skyscraper map](/images/blog/rts/RTS-prototype-1024x728.png)
 
-![RTS prototype2](/images/blog/rts/RTS-prototype2-1024x779.png)
+![Another in-game view of the RTS prototype](/images/blog/rts/RTS-prototype2-1024x779.png)
 
-Here is the final look, the project was abandonned because the graphist I was working with dropped it because of personal problems... about that, I'm taking this opportunity to pass my advert again :), if you are a graphist passionate by video games, feel free to contact me!
+## Where the project stopped
 
-Beside the lack of assets, it's fully functional fight, buying weapons, technological tree, networking) except for the fog of war who caused some performance issue and needed to be rewrited several times, I didn't know about shaders yet.
+This is the final look of the game. The project was shelved when the artist I was working with had to leave it for personal reasons. Which gives me a chance to repeat my call: if you are an artist passionate about video games, get in touch!
 
-Another completely unexpected issue was balancing the game, the workload is huge to get an interesting game, with a rich variety of possible strategy, with games not being stuck or unfinishable, and just have a... fun game. It represent as much work as programming the gameplay, I almost didn't start it, I would have need to make a large amount of people test it, but for that I needed assets, a master server, find players, so it was just not the moment yet.
+Apart from the missing assets, the game is fully functional: combat, buying equipment, the tech tree and networking all work. The exception is the fog of war, which caused performance problems and had to be rewritten several times. I didn't know about shaders yet, and computing visibility on the GPU would have been the natural fix.
 
-I chose not to dwell on technical stuff since this article is already quite big, but don't hesitate to ask questions in the comments
+The truly unexpected challenge was balancing. Getting an interesting game takes a huge amount of work: a rich variety of viable strategies, no matches that stall or can't be finished, and in the end, simply a fun game. Balancing is as much work as programming the gameplay, and I had barely started it. It would have required many people playtesting, which in turn required assets, a master server for matchmaking and a player base. The timing just wasn't right.
+
+I've kept the technical details out of this article since it's already long, but feel free to ask questions in the comments.

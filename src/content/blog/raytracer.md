@@ -1,35 +1,41 @@
 ---
-title: "Raytracer"
-description: "I'll go in chronological order and present your my first working project, scholar, having a distant relationship with video games, it is a raytracer written in C, it's a 3D…"
+title: "Writing a Raytracer in C"
+description: "My first major Epitech project: a raytracer in C with lighting, shadows, reflection and refraction, and a quick look at how ray-object intersection works."
 date: 2013-04-23
 type: technical
 tags:
   - "Epitech"
-  - "C++"
+  - "C"
   - "Student"
 cardImage: /images/blog/raytracer/RT1.png
 ---
 
-I'll go in chronological order and present your my first working project, scholar, having a distant relationship with video games, it is a raytracer written in C, it's a 3D rendering engine, that actually taught me more about making a physics engine than making a "true" rendering system for real-time purpose (because of all the collisions stuff), but I don't dismiss the idea of a raytraced game, especially with CUDA or openCL (libraries allowing to execute code on the GPU, i'll come back on my first step on that in an upcoming -far- articles). This project was similar to another one I made just before this one, and that i chose not to devote an article, a little raycasting application working in real time rendering a maze where you can walk freely, in the spirit of Wolfenstein 3d, the difference between that and the raytracer was that it throw the ray only horizontally and confront them to a 2d array instead of equations.
+I'll present my projects in chronological order, starting with my first substantial one. It's a school project with only a distant link to video games: a raytracer written in C, which is a type of 3D rendering engine. It actually taught me more about building a physics engine than about real-time rendering, because so much of it is collision detection. Still, I haven't given up on the idea of a raytraced game, especially with CUDA or OpenCL, which let you run general-purpose code on the GPU. I'll write about my first steps with those in a (much) later article.
 
-I couldn't find screenshot of mine, and couldn't recompile it either (it was working on a 32 bit linux and with a special graphic library from my school), here is a borrowed image to illustrate the output of a raytracer:
+Just before this, I built a similar project that doesn't deserve its own article: a small real-time raycaster that renders a maze you can walk through freely, in the spirit of Wolfenstein 3D. The difference is that a raycaster only casts rays horizontally, one per screen column, and tests them against a 2D grid instead of solving equations for 3D objects.
 
-![Rt](/images/blog/raytracer/Rt.jpg)
+I couldn't find any screenshots of my raytracer, and I can't recompile it either (it ran on 32-bit Linux with a graphics library specific to my school), so here is a borrowed image to show what a raytracer produces:
 
-My raytracer handled: lightning, shadow, reflection, refraction, "brute force" anti-aliasing, direct shadow on simple geometric form: sphere, cone cylinder, plan and some procedural textures. It would have takken 30 seconds to render the image above, it's complexity being quadratic on the number of object and the number of lights (it mean that each element added multiply the rendering time) and it's linear on the number of pixel to display, which mean that if we want a image 2 time bigger, it ll take 2 time longer to render.
+![Example raytraced scene with reflective and refractive objects](/images/blog/raytracer/Rt.jpg)
 
-## How does it works ?
+My raytracer supported lighting, shadows, reflection, refraction, brute-force anti-aliasing (supersampling: casting several rays per pixel and averaging them), simple geometric primitives (spheres, cones, cylinders and planes) and a few procedural textures. An image like the one above would have taken about 30 seconds to render.
 
-Quickly, because there is already tons of sites describing it, starting by wikipedia, and because the purpose of this blog is video games:
+Without any acceleration structure, the cost per pixel grows with the number of objects multiplied by the number of lights: every ray is tested against every object, and every hit point casts a shadow ray toward each light, which is again tested against every object. The total time is also linear in the number of pixels, so an image with twice as many pixels takes twice as long to render.
 
-For each pixels of the future image, we generate a virtual vector, going from the camera position to the focal plan on the pixel we want to render, we extends this vector on the form of ray (that's why it's called "raytracer"), then we test the collision between every object of the scene (can be optimized, of course) which are represented by equation, in this case, resolve the collision is about resolve a system of 2 equations, one for the ray, one for the objects, and results most of the time in second degree equation, the discriminant tel us if there is collision or not. "discriminant = b² - 4ac". if you remember your math lessons.
+## How It Works
 
-in the first place, we just return the value of the intercepted object, and we get this result:
+I'll keep this brief, since plenty of sites already explain it in detail (Wikipedia is a good start) and this blog is about video games.
 
-![RT1](/images/blog/raytracer/RT1.png)
+For each pixel of the final image, we build a vector from the camera position through that pixel's position on the focal plane. We extend this vector into a ray (hence the name "raytracer") and test it for intersection against every object in the scene. This can of course be optimized.
 
-then we calculate the normal at the impact point of the ray (for example, the sphere's is just the subtraction of the impact point minus it's center) , and then the scalar product between the light and the normal (do not forget to normalize the vectors) give us a lighting value:
+Each object is described by an equation, so finding an intersection means solving a system of two equations: one for the ray, one for the object. For spheres, cones and cylinders, substituting the ray's equation into the object's gives a quadratic equation in the distance along the ray. As you may remember from math class, its discriminant, `b² - 4ac`, tells us whether there is a hit: negative means the ray misses, otherwise the smallest positive root gives the nearest intersection. (A plane only needs a linear equation.)
 
-![RT2](/images/blog/raytracer/RT2.png)
+As a first step, we simply return the color of the object the ray hits, which gives this result:
 
-That's the idea, to implement the other features, it's just about making ray bounce between objects in a recursive way, every time getting collisions point and normal and cast ray to light too, to make sure we are not "shadowed". I'll leave you to the internet if you want to know more about it.
+![First render: flat colors of the objects hit by each ray](/images/blog/raytracer/RT1.png)
+
+Next, we compute the surface normal at the hit point. For a sphere, it's just the hit point minus the sphere's center. The dot product between the normal and the direction toward the light (both normalized) gives the lighting intensity at that point:
+
+![Second render: diffuse lighting computed from surface normals](/images/blog/raytracer/RT2.png)
+
+That's the core idea. The other features come from making rays bounce between objects recursively: at each hit point, compute the collision point and normal, then cast a ray toward each light to check that nothing is in the way (otherwise the point is in shadow). Reflection and refraction spawn new rays in the reflected or refracted direction. If you want to go further, the internet has everything you need.

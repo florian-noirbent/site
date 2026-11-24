@@ -1,28 +1,28 @@
 ---
-title: "Chess game"
-description: "Here is a small multiplayer chess game that I made today for a networking peer to peer project, it's done in WPF: connection dialog middle of the game (an expert eye would measure…"
+title: "A Peer-to-Peer Chess Game in WPF"
+description: "A small multiplayer chess game built in a day with WPF for a peer-to-peer networking project at Beijing Jiaotong University."
 date: 2013-10-28
 type: devlog
 tags:
-  - "C++"
+  - "C#"
   - "WPF"
   - "Beijing Jiaotong University"
   - "Student"
 cardImage: /images/blog/chess-game/ChessConnectionpng-1024x579.png
 ---
 
-Here is a small multiplayer chess game that I made today for a networking peer to peer project, it's done in WPF:
+Here is a small multiplayer chess game I wrote today for a peer-to-peer networking project. The interface is built with WPF. The two players connect directly to each other, with no central server in between.
 
-connection dialog
+The connection dialog:
 
-![ChessConnection](/images/blog/chess-game/ChessConnectionpng-1024x579.png)
+![Chess game connection dialog](/images/blog/chess-game/ChessConnectionpng-1024x579.png)
 
-middle of the game (an expert eye would measure at fair value the expertise of both players trough these openings):
+A game in progress (a trained eye will judge the skill of both players from these openings):
 
-![ChessGame](/images/blog/chess-game/ChessGame-1024x579.png)
+![A chess game in progress](/images/blog/chess-game/ChessGame-1024x579.png)
 
-It really lack an IA and a 3D interface, but sadly it was not the subject today.
+It's missing an AI opponent and a 3D board, but networking was the subject today.
 
-We had choice between classic chess or chinese chess (or rather the choice between 洋棋 "chess game" and 西洋棋 "western chess game"), I choosed western chess game, the rules of the chinese version looks quite twisted, Here is the board, [The rules are here](http://www.chessvariants.org/xiangqi.html):
+We could choose between Western chess and Chinese chess (象棋, xiangqi, as opposed to 西洋棋, "Western chess"). I went with Western chess, because the rules of the Chinese version look rather convoluted. Here is the board, and [the rules are here](http://www.chessvariants.org/xiangqi.html):
 
-![free-vector-chinese-chess-clip-art_105147_Chinese_Chess_clip_art_hight](/images/blog/chess-game/free-vector-chinese-chess-clip-art_105147_Chinese_Chess_clip_art_hight.png)
+![Chinese chess (xiangqi) board](/images/blog/chess-game/free-vector-chinese-chess-clip-art_105147_Chinese_Chess_clip_art_hight.png)

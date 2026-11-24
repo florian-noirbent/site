@@ -1,6 +1,6 @@
 ---
-title: "Occulus rift"
-description: "I'm lucky enough to make an Occulus rift application in my internship for few weeks now and I want to share my experience. First let's talk about what everyone else say: the DK2…"
+title: "Developing for the Oculus Rift DK2"
+description: "A few weeks of building an Oculus Rift DK2 application during my internship: resolution, motion sickness, the 75 fps requirement, and the missing hands."
 date: 2014-11-20
 type: devlog
 tags:
@@ -9,16 +9,24 @@ tags:
 cardImage: /images/blog/occulus-rift/occulus-rift-225x300.jpg
 ---
 
-I'm lucky enough to make an Occulus rift application in my internship for few weeks now and I want to share my experience.
+For a few weeks now, I've had the chance to build an Oculus Rift application during my internship, and I want to share what I've learned.
 
-First let's talk about what everyone else say: the DK2 resolution is better, but there is still a long way to go before it can be considered acceptable (I found that video showing what we actually see inside the first version: https://www.youtube.com/watch?v=eUbFdUzUYmA). The field of view is also a problem, but I don't see him evolve any soon, and it would make worse the resolution problem. finally the nausea, I don't know why everyone think he won't be concerned (I was too), maybe the marketing team did a great job, insisting heavily on "some people..." in every sentence mentioning it, and announcing every while that a magical update fixed it. In practice everyone get ill, on about twenty persons, everyone single on was... but there is resilience differences, some just need 10 seconds while other can stand it 10 minutes for a first try. I've heard that it get slowly better with training, it seems true since at start I could bear 3 minutes and now 8 minutes before feeling anything, but I mainly learned to avoid to do everything that could make me ill, and now I barely dare to move the head when I wear it.
+## The headset itself
 
-![occulus rift](/images/blog/occulus-rift/occulus-rift-225x300.jpg)
+Let's start with what everyone else says. The DK2's resolution is better than the first kit's, but there is still a long way to go before it's acceptable (this video shows what you actually see inside the first version: https://www.youtube.com/watch?v=eUbFdUzUYmA). The field of view is also a limitation, and I don't see it improving soon, since widening it would make the resolution problem worse by spreading the same pixels over a larger area.
 
-Now, from a developer view point, there is other issues: cinematics can't be precomputed, everything has to be fully in real-time, we did a lot of research to make that possible but nothing yielded to acceptable results.
+Then there's the nausea. I don't know why everyone assumes they won't be affected (I did too). Maybe the marketing team did a great job, carefully saying "some people..." every time the subject comes up and regularly announcing that a magical update has fixed it. In practice, everyone gets sick: of about twenty people who tried it here, every single one did. Tolerance varies a lot, though. Some people last ten seconds, others ten minutes on their first try. I've heard it slowly improves with practice, and that seems true: I started at 3 minutes and can now go 8 minutes before feeling anything. Mostly, though, I've learned to avoid everything that makes me sick, and I now barely dare to move my head while wearing it.
 
-The framerate can't drop bellow 75, at the time where more and more console games are satisfied with 30 fps, this imperative of 75fps is quite disturbing, especially since stereoscopic rendering need 2 image, so software need to be able to make 150 scene render each second. add to that a quite large resolution (on paper at least), which promise to be increased again for the official release version and even for next ones until we reach the minimum acceptable of 4k! so huge graphics concession are necessary. When I say "imperative", it's not an overstatement: any drop bellow even if only at 70fps for a frame will slash a considerable part of your precious minutes (/seconds) before the sickness catch up.
+![The Oculus Rift DK2 headset](/images/blog/occulus-rift/occulus-rift-225x300.jpg)
 
-I regret not to have a razer hydra, or STEM system (http://sixense.com/wireless) ... being in a virtual world "without hands" is very disturbing. Using mouse and keyboard is not at all intuitive and breaks immersion, virtual reality visualization tools might even have to wait for powerful interfaces to really shine.
+## Developer constraints
 
-I realize that this is a rather negative picture, I am still convinced that this is the future, or at least a new emerging branch that will co-exist with other media, but it will take at least 5 to 10 years of hardware improvement and think more the role of this technology.
+From a developer's point of view, there are other issues. Cutscenes can't be pre-rendered: since the view follows the player's head, everything has to be rendered in real time. We researched ways around this, but nothing gave acceptable results.
+
+The frame rate can never drop below 75 fps. At a time when more and more console games settle for 30 fps, this requirement is a real shift, especially since stereoscopic rendering needs two images, one per eye, so the software has to render the scene 150 times per second. Add a fairly high resolution (on paper at least), which is set to increase again for the consumer version and the ones after it, until we reach what I consider the acceptable minimum of 4K. Major graphics compromises are unavoidable. And when I say "requirement", I mean it: a single frame dropping even to 70 fps will cut a large chunk off your precious minutes (or seconds) before the sickness kicks in.
+
+## No hands
+
+I wish I had a Razer Hydra or a STEM system (http://sixense.com/wireless). Being in a virtual world without hands is very disorienting. Mouse and keyboard are not intuitive at all and break immersion. VR visualization tools may well have to wait for better input devices before they can really shine.
+
+I realize this paints a rather negative picture. I'm still convinced this is the future, or at least a new branch that will coexist with other media. But it will take at least 5 to 10 years of hardware improvements, and more thought about what this technology is really for.

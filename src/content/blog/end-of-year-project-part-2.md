@@ -1,6 +1,6 @@
 ---
-title: "End-of-year project – part 2"
-description: "As i said, I'll talk about the editor of my end-of-year project this time. The principle of tile engine before talking about the editor, it's important to understand how 2D…"
+title: "End-of-Year Project, Part 2: The Map Editor"
+description: "How tile engines draw 2D maps with layers, a tour of the modular map editor behind my end-of-year project, and the features I had to cut."
 date: 2013-05-12
 type: devlog
 tags:
@@ -12,34 +12,40 @@ tags:
   - "Student"
 ---
 
-As i said, I'll talk about the editor of my end-of-year project this time.
+As promised in [part 1](/blog/end-of-year-project-part-1), this article covers the editor of my end-of-year project.
 
-## The principle of *tile engine*
+## How a tile engine works
 
-before talking about the editor, it's important to understand how 2D terrain are made in video games (it could also be used for a 3D games even if it's less common).
+Before talking about the editor, you need to know how 2D terrain is usually built in video games (the same technique can be used in 3D, although that's less common).
 
-the terrain is split in squares along a grid, each "square" contain an ID matching the texture to use, saved in a 2 dimensional array. when you want to draw, you just read through the array of every visible cells, and for each, read the ID and draw the matching texture at the current square position. This allow to reuse many times the same element over the map, for example, with just a grass and road texture 64x64, you can draw a path as long as you want.
+The terrain is divided into a grid of squares, called tiles. Each cell stores an ID that refers to a texture, and the whole map is saved as a two-dimensional array of these IDs. To draw the map, you loop over the visible cells, read each ID and draw the matching texture at that cell's position. This lets you reuse the same small images across the whole map: with just a 64x64 grass texture and a 64x64 road texture, you can draw a path as long as you like, at almost no memory cost.
 
-If we just stayed on that the result would be pretty ugly, to get a correct result, we need layers, IE for each cells you don't only have on ID but several, which get draw one above the others. It bring some comfort in the level design, for example, if you want a chest above grass and another above the road, you'll just make a chest with a transparent contour and put it above the ground, it avoid to make the texture chest with every possible ground present in your game. Next important thing, you can draw each layer separately to have one layer behind the characters (the background layer) and one before (the foreground layer), so the characters appear behind those elements, for example in this project, the top of the trees and roofs of the houses are in this layer. In this end-of-year project I have four layers: the ground, the objects, the foreground and a "dynamic layer", which hold every information about collision with the map, spawns position, triggers, etc even if it's not directly draw.
+On its own, this gives a pretty ugly result. To get something decent, you need **layers**: each cell holds not one ID but several, drawn on top of each other. This makes level design much more comfortable. If you want one chest on grass and another on the road, you draw a single chest with a transparent background and place it on top of the ground, instead of making a chest texture for every ground type in your game.
+
+The second benefit is that layers can be drawn separately, some before the characters and some after. A background layer ends up behind the characters and a foreground layer in front of them, so characters can walk *behind* things. In this project, the treetops and house roofs are in the foreground layer.
+
+My end-of-year project uses four layers: the ground, the objects, the foreground, and a "dynamic" layer. That last one is never drawn directly; it holds the gameplay data attached to the map, such as collisions, spawn positions and triggers.
 
 ## The editor
 
-You understood, the editor just have to write IDs of textures for each square in a file to make it usable by the game engine, nothing mystic behind it's a just a text file holding numbers separated by space, you can even edit the map with a notepad. Like the last time, the easiest way is to show you the editor with a video:
+So all the editor really has to do is write the texture IDs of each cell to a file the game engine can read. There's nothing mysterious about it: it's a plain text file of numbers separated by spaces, and you could even edit a map in Notepad. As last time, the easiest way to show it is a video:
 
 <iframe src="https://www.youtube-nocookie.com/embed/BZuIZbumIJ8" title="YouTube video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-At the beginning, I had planned to spend all the time to the editor, but when I understood that my mates didn't had time to work on the project, I had to give up many features to make the game. Here are some of the feature I wanted to implement.
+## What I had to leave out
 
-A boss editor: besides editing the map, we wanted to create monsters from a choice of textures, then set the characteristic, then choose there capacities in a list with some tweaks over these skills.
+My original plan was to spend the whole year on the editor. Once it became clear that my teammates wouldn't have time for the project, I had to drop many features so that the game itself would exist. Here are some of the ones I had in mind.
 
-But mainly a map generation much more advanced now the editor just join the modules with only the information of there cardinals points link, as you saw in the gameplay video, it make a level design "standard", everything looks alike; I could have add more variables on every module, for example modules holding quest objects that need to appear once and only once, at half the level.
+**A boss editor.** Beyond editing maps, the idea was to create monsters by picking a sprite, setting their stats, then choosing their abilities from a list and tweaking those skills.
 
-I could have had some layers to the map generator too, for example make a river go through the town of the first map, while keeping the existing paths.
+**Smarter map generation, above all.** Right now the generator joins modules using only one piece of information: which of their four sides (north, south, east, west) open onto a neighbor. As you saw in the gameplay video, this produces fairly generic level design where everything looks alike. I could have added more constraints per module, for example modules containing quest objects that must appear exactly once, around the middle of the level.
 
-I also could have make fix group of modules, to allow, for example, to make an arena for boss encounter without being limited by a module size.
+**Layers in the generator.** For instance, running a river through the town on the first map while keeping the existing paths intact.
 
-We could also imagine some teleporter to additional modules, to allow players to enter houses and caves for example.
+**Fixed groups of modules,** to build things like a boss arena larger than a single module.
 
-Finally I would have liked to had some tools to make level design easier, like saving patterns, to drop trees, houses etc in a single click, too deepen what I had began with the copy-paste feature.
+**Teleporters to extra modules,** so players could enter houses or caves.
 
-So, as you can see, I didn't lacked of ideas :). In an upcoming article, I'll talk about the monsters AI and pathfinding.
+**Level design tools,** such as saved patterns to place trees or houses in a single click, building on the copy-paste feature I had already started.
+
+As you can see, I wasn't short of ideas. The next article covers the monster AI and pathfinding.

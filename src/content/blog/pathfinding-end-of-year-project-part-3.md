@@ -1,11 +1,11 @@
 ---
-title: "Pathfinding, End-of-year project – part 3"
-description: "Let's end the end-of-year project's series with the AI I made for the monsters, more especially the pathfinding (finding the shortest path to a destination, maybe in a maze).…"
+title: "End-of-Year Project, Part 3: Pathfinding with Collaborative Diffusion"
+description: "Why I chose collaborative diffusion over A* for the monsters of my end-of-year project: near-constant cost per crowd, emergent group tactics, and how to optimize it."
 date: 2013-05-25
 type: technical
 tags:
   - "Epitech"
-  - "C++"
+  - "C#"
   - "XNA"
   - "End-of-year project"
   - "Xbox"
@@ -14,50 +14,48 @@ tags:
   - "Student"
 ---
 
-Let's end the end-of-year project's series with the AI I made for the monsters, more especially the pathfinding (finding the shortest path to a destination, maybe in a maze).
+To close this series on my end-of-year project (see [part 1](/blog/end-of-year-project-part-1) and [part 2](/blog/end-of-year-project-part-2)), let's look at the monster AI, and more specifically at pathfinding: finding the shortest path to a destination, possibly through a maze.
 
-## Example of A\*
+## The usual answer: A\*
 
-The method I used is a bit away from the usual [A\*](http://en.wikipedia.org/wiki/A*_search_algorithm), that I invite you to document yourself if you do not know it yet, since it's the most used today; to quickly resume it : It's a recursive algorithm that, to simplify, try to make straight line path until it find an obstacle, if one is found,we look at the closest path by going up through the graph and always evaluate the node with the smallest cost (current + straight line).
+The method I used departs from the classic [A\*](http://en.wikipedia.org/wiki/A*_search_algorithm), which is the most widely used pathfinding algorithm today and well worth reading up on if you don't know it yet. In short, A\* treats the map as a graph and keeps a list of candidate nodes to explore. For each node it adds the cost already paid to reach it to an estimate of the remaining distance, usually the straight-line distance to the goal, and it always expands the candidate with the lowest total. In open terrain, the search therefore heads straight for the goal; when it runs into an obstacle, it falls back on the next most promising nodes until it finds a way around. As long as the estimate never overestimates the real distance, the path it returns is the shortest one.
 
-![](http://upload.wikimedia.org/wikipedia/commons/5/5d/Astar_progress_animation.gif)
+![Animation of A* exploring a grid and working its way around an obstacle toward the goal](http://upload.wikimedia.org/wikipedia/commons/5/5d/Astar_progress_animation.gif)
 
-This allow to have multiple elements (agent) moving to different destination, with potentially different constraint, for example in a military game, a tank might ignore some node while infentery'll acess to every ones, this avoid the predicament where a tank controlled by an AI try to pass through a door :).
+Because each agent runs its own search, many agents can head for different destinations under different constraints. In a military game, for example, a tank can be told to ignore certain nodes while infantry can use all of them, which spares you the classic sight of an AI-controlled tank trying to squeeze through a door.
 
-But the A\* as 2 major drawback that made me find another solution:
+But A\* has two major drawbacks that pushed me toward another solution:
 
-- each agent compute it's own path, which lead to a linear complexity based on the number of element, IE, if you double you monsters number, you double compute time, in this project I wanted a huge amount of monsters that all have the same destination, so it would have be a waste of resources.
-
-- each agent move without considering the other agents, so it gives huge collision problems, you have to fix this by implementing a "collision avoidance" system, which result in a complexity at best in *log(n) \* n *and at worst it will become quadratic, depending of what you decide. But even with this the agents stay "selfish".
+- **Every agent computes its own path**, so the cost grows linearly with the number of agents: double the monsters, double the computation time. In this project I wanted a huge number of monsters all chasing the same targets, so recomputing essentially the same paths for each of them would have been a waste.
+- **Every agent moves without regard for the others**, which causes serious collision problems. You have to add a collision avoidance system on top, whose cost is at best *n log n* and can become quadratic depending on the approach. Even then, the agents remain "selfish": each one optimizes its own path, and nobody cooperates.
 
 ## Collaborative diffusion
 
-I implemented [Collaborative Diffusion](http://scalablegamedesign.cs.colorado.edu/wiki/Collaborative_Diffusion), here's the result it give me:
+I implemented [collaborative diffusion](http://scalablegamedesign.cs.colorado.edu/wiki/Collaborative_Diffusion) instead, which gave me:
 
-- A nearly constant complexity, IE the compute time to move every monsters is (almost) independent of there number, so I can have as many monsters as I want
+- **A nearly constant cost with respect to the number of monsters.** The work is done on the map, not per agent, so moving every monster takes (almost) the same time whether there are ten or a thousand. I can spawn as many as I want.
+- **Group behavior for free.** The monsters don't just trail single-file behind one another: they try to surround the player, block every escape route, split up to go after each player, and so on.
 
-- A "group behavior": my monsters don't just stupidly follow one behind the other, they try to surround the player, to block every path, they split to attack every players, etc
+The trade-off is losing the flexibility of A\* described above, but this game didn't need it. There is no perfect solution that works in every scenario; each new project means weighing the options again in its own context.
 
-The drawback is that I lost the flexibility of A\*, the benefits I have outlined, but for this game, they where useless, there is no perfect solution working in every scenario, with each new project I need to reevaluate every possibilities in the new context.
+## How it works
 
-## How does it work ?
+Each player emits a "scent" that spreads across the map. Blocking cells stop it, and slowing cells (difficult terrain) weaken it. The scent is strongest at the player's position and fades with distance, so a monster only has to move to the neighboring cell with the highest value to reach the player.
 
-To make it simple, each player diffuse a "smell" on the map, it's stopped by blocking cells, and reduced by slowing cells, each monsters then just have to follow the highest value to find the player. Then the monster reduce the smell value of it's square so if another monster follow him, it will choose to take a different "free" path, the reduction value determine the size of the detour the "following" monster is willing to take to avoid to follow it's predecessor.
+The collaborative part comes next: each monster also lowers the scent value on its own cell. A monster coming up behind it then sees a weaker trail on that route and picks a different free path instead. The amount of reduction controls how long a detour a following monster is willing to take rather than walk in its predecessor's footsteps.
 
-Here is a illustration of this implementation on a pac-man, the smell diffusion is yellow.
+Here is an illustration of the technique applied to Pac-Man, with the diffused scent shown in yellow.
 
-![](https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQbsaE54STX_8Tj6sUJXQpm2JVzGmfUUTVGSZ84TG2Hm029qqCS)
+![Pac-Man maze with the ghosts' scent map diffused through the corridors in yellow](https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQbsaE54STX_8Tj6sUJXQpm2JVzGmfUUTVGSZ84TG2Hm029qqCS)
 
 ## Optimizations
 
-It sound simple, it is, but there is still some imperative optimization:
+The idea is simple, and so is the implementation, but a few optimizations are essential:
 
-- For a pac-man, you can afford to refresh the whole map, but for a huge world, like the one I made with maps bigger than 5 millions tiles, it's out of question, you have to decide of a compute zone, in which your make your smell computation. In my end-of-year project it's 50 by 50, which mean any monster away from 25 squares from the player will stop, this correspond precisely to their "standby" distance.
+- **Limit the computation area.** For Pac-Man, you can afford to update the whole map, but in a large world like mine, with maps of more than 5 million tiles, that's out of the question. You define a zone around each player where the scent is computed. In my end-of-year project it's 50 by 50 cells, so any monster more than 25 cells from a player stops moving, which matches exactly their "standby" distance.
+- **Update incrementally, with two arrays.** Don't clear the map and rebuild it from scratch every frame with a recursive flood fill. Instead, assume the scent map changes only a little between two iterations. Keep two arrays: at each iteration, compute every cell's new value from its neighbors' values in the first array, write it into the second, then swap the two (a technique known as double buffering). The players only set the value of their own cell, and the scent spreads one step further across the map at each iteration. Here again, the cost no longer depends on the number of agents emitting a scent.
 
-- The array must not be cleaned and recomputed every frame with a recursive algorithm, you should use assumption that the map will evolve slowly from one iteration to the next and rotate between 2 array, changing the value of each cell base on it's surrounding cells, which again avoid explode complexity based on diffusing agents numbers, so each agent only update it's current square, and it's passed to the rest of the map through the next iterations.
+There are also a couple of optional ones:
 
-and there is some other optional optimization:
-
-- You don't necessarily iterate each frame, you only need to have a refresh rate higher than the time it take to an agent to move to another square, so in my game 5 time by second are enough to have a correct result.
-
-- The second optimization we discussed allow parallel computation, you should have immediately thought about GPGPU, I didn't done it my game because I already had excellent result, but using CUDA (or openCL) should allow to refresh millions of cells each iteration.
+- **Don't update every frame.** The scent map only needs to refresh faster than an agent takes to move from one cell to the next. In my game, five updates per second are enough for correct behavior.
+- **Run it on the GPU.** The double-buffered update makes every cell independent of the others within an iteration, so they can all be computed in parallel. That should immediately make you think of GPGPU. I didn't do it in my game because the results were already excellent, but with CUDA (or OpenCL) you should be able to refresh millions of cells per iteration.

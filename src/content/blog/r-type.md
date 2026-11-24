@@ -1,6 +1,6 @@
 ---
-title: "R-type"
-description: "Before continuing with my end-of-year project, Here is another game we made this year. I actually didn't worked much on it, I was busy with an artificial intelligence for a…"
+title: "R-Type: A Multiplayer Remake in C++"
+description: "Our team's take on R-Type: a cross-platform C++ remake with a multi-game server and enemies loaded as plugins at runtime."
 date: 2013-05-06
 type: devlog
 tags:
@@ -12,14 +12,14 @@ tags:
 cardImage: /images/blog/r-type/R-Type.png
 ---
 
-Before continuing with my end-of-year project, Here is another game we made this year. I actually didn't worked much on it, I was busy with an artificial intelligence for a Gomoku-ninuki project that needed to be done in the same time (you'll see it in a future article), and I left my working group on this.
+Before I continue with my end-of-year project, here's another game we made this year. I'll be honest: I didn't contribute much to this one. I was busy writing an AI for a Gomoku Ninuki project due at the same time (you'll see it in a future article), so I left this one to the rest of my group.
 
-It was about making a copy of an old known game, like for Bomberman but this time with R-type, if you don't know it yet, I suggest you to try it out on a flash version immediately:
+As with Bomberman, the assignment was to recreate a well-known classic, this time R-Type. If you've never played it, I suggest trying the Flash version right away:
 
-[http://www.classicgamesarcade.com/game/21604/r-type-flash-game.html](http://www.classicgamesarcade.com/game/21604/r-type-flash-game.html)
+[Play R-Type (Flash version)](http://www.classicgamesarcade.com/game/21604/r-type-flash-game.html)
 
-![R-Type](/images/blog/r-type/R-Type.png)
+![Screenshot of the original R-Type](/images/blog/r-type/R-Type.png)
 
-The biggest difference with the original version was that we needed to add a multiplayer mode, with a server handling every games and allowing a lot of players to join the server, a sort of mmo R-type^^, and allow to add new mobs on the fly through plugins. Another important part was the need to have an application compatible window and linux, without using portable libraries.
+The biggest difference from the original was the required multiplayer mode: a server that runs several games at once and lets many players connect to it, a sort of MMO R-Type. New enemies also had to be addable on the fly through plugins, meaning shared libraries loaded at runtime without recompiling the game. Another key requirement was that the application had to run on both Windows and Linux without relying on portable libraries for that part, so the group had to write its own abstraction layer over each system's APIs.
 
-The version my group made was very close to the original, and the multiplayer was working.It's a small achievement by itself since they had less than 10 days and I was relatively unavailable to help.
+The version my group delivered was very close to the original, and the multiplayer worked. That's an achievement in itself, given that they had less than ten days and I was mostly unavailable to help.

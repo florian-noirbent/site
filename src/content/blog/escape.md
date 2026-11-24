@@ -1,32 +1,33 @@
 ---
-title: "Escape"
-description: "I'm going to tell you about a current project this time since I presented it last week, It's called \"Escape\", it's a prototype I made for a game design module, it was the first…"
+title: "Escape: A Puzzle Game Prototype"
+description: "Escape, a Unity puzzle prototype made with e-artsup students for a game design module: guide a ball to the exit with objects whose behavior a trigger switches."
 date: 2013-05-18
 type: devlog
 tags:
   - "Unity"
   - "Prototype"
   - "Epitech"
-  - "C++"
   - "Student"
 ---
 
-I'm going to tell you about a current project this time since I presented it last week, It's called "Escape", it's a prototype I made for a game design module, it was the first time this module took place, but I had to do it :) I hope they'll do it again for the next years students. The project was in collaboration with e-artsup. Our group was formed by 3 students second year students of e-artsup, first year students of Epitech, and me, third year. Unlike my end-of-year project which was evaluated on technical purely criteria, here, since it was about game design, the goal was to imagine an innovative project, work around the gameplay and polish the render.
+This time it's a current project, since I presented it just last week. It's called "Escape", a prototype I made for a game design module. This was the first year the module ran, and I wasn't going to miss it; I hope the school keeps it for future students. The project was a collaboration with e-artsup, an art and design school. Our group brought together three second-year e-artsup students, first-year Epitech students, and me, in my third year. Unlike my [end-of-year project](/blog/end-of-year-project-part-1), which was graded on purely technical criteria, this one was about game design: the goal was to come up with an innovative concept, iterate on the gameplay and polish the look.
 
-Here is our game, it's a puzzle game, a ball come from an input pipe, the player as to drive it to an output pipe. he as an inventory with objects to drop on the ball path, there is also pre-existing objects on each level that the player has to take into consideration, moreover, there is a trigger on each levels; to open the output pipe, the player must have touched it at least once, each time it change the behavior of objects.
+## The game
 
-We have 3 objects on this prototype:
+Escape is a puzzle game. A ball comes out of an entry pipe, and the player has to guide it to an exit pipe. To do that, the player has an inventory of objects to place along the ball's path, and must also deal with the objects already placed in each level. On top of that, every level has a trigger. The ball must touch it at least once for the exit pipe to open, and each time it does, the trigger switches between green and red, which changes how the objects behave.
 
-- triangle: the ball bounce if the trigger is green, if it's red the ball roll.
+The prototype has three objects:
 
-- cube: recenter the ball and throw it on a perpendicular angle, whatever the trigger's position is.
+- **Triangle:** the ball bounces off it when the trigger is green and rolls along it when the trigger is red.
+- **Cube:** recenters the ball and sends it off at a right angle, whatever the trigger's state.
+- **Teleporter:** moves the ball between its two portals when the trigger is green, and does nothing when it's red.
 
--teleporter: move the ball between the 2 portal if the trigger is green, do nothing if it's red.
+The game has six levels, of which levels 1, 2 and 4 are tutorials. It takes about 10 to 30 minutes to finish.
 
-The game is composed of 6 levels, levels 1 2 and 4 being tutorials, it should take you about 10 to 30 minutes.
+The game could be played in the browser, but it wasn't built for the web and nothing was streamed, so the 4 MB download could take a while. It isn't translated either, but there is very little text: "jouer" means "play", "quitter" means "exit", "rejouer" means "replay", "niveau" means "level" and "niveau suivant" means "next level". The rest should be self-explanatory.
 
-Click the image to start the game, but it was not made for web, and no content is streamed, so the loading might be slow (4Mo). Sorry but it's not translated, it shouldn't be a problem since there is really few texts ("jouer" meaning "play", "quitter" mean "exit", "rejouer": "replay", "niveau": "level" and "niveau suivant": "next level", the rest should be self-explanatory)
+*The original Unity Web Player demo is no longer available.*
 
-\*The original Unity Web Player demo is no longer available.\*
+## My role
 
-Besides the game design in this project, I taught to my first year students to program with Unity (with a n average result^^), and I made the most tricky parts. I also made the 3D models then gave to the graphist from e-artsup the UV layout to texture, since they learn very late 3D modeling in there courses.
+Beyond the game design work, I taught the first-year students to program with Unity (with mixed results), and I wrote the trickiest parts of the code myself. I also made the 3D models, then handed the UV layouts to the e-artsup artists for texturing, since their curriculum only covers 3D modeling late.

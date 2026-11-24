@@ -1,6 +1,6 @@
 ---
-title: "copyright troll"
-description: "I was contacted by opium-bleu.com through the blog's comments to tell me that they disagree the use I made of their screenshoots on the article about the raytracer (I indeed…"
+title: "A Copyright Complaint About My Raytracer Article"
+description: "A site objected to screenshots I used in my raytracer article. Here is what I changed, and how I handle image credits on this blog from now on."
 date: 2013-10-07
 type: devlog
 tags:
@@ -8,12 +8,12 @@ tags:
 draft: true
 ---
 
-I was contacted by [opium-bleu.com](mailto:contact@opium-bleu.com) through the blog's comments to tell me that they disagree the use I made of their screenshoots on the article about the raytracer (I indeed borrowed the intermediate results of a work in progress raytracer to them), so I put it offline until I can have a talk with them, I'll update this article later.
+[opium-bleu.com](mailto:contact@opium-bleu.com) contacted me through the blog's comments to object to my use of their screenshots in the raytracer article. I had indeed borrowed intermediate results from their work-in-progress raytracer. I took the article offline until I could talk it over with them, and I'll update this post later.
 
-Update: due to their lack of response, I simply put back online the [article](/blog/raytracer) and replaced their content with a quickly made image with photoshop, for a fairly similar result.
+Update: since they never replied, I simply put the [article](/blog/raytracer) back online and replaced their content with an image I quickly made in Photoshop, which gives a fairly similar result.
 
-I always tell, when a screenshoot is not from me, to respect my readers, but I sometime neglected to tell the source, so I want to apologize to the authors that I could have offended. I'am going to edit imediatly all images to add an hyperlink to it's source, and I hope this will remove any tension and misunderstanding in the future.
+Out of respect for my readers, I always say when a screenshot isn't mine, but I have sometimes neglected to credit the source. I apologize to any authors I may have offended. I'm going to edit all images right away to add a link to their source, and I hope this will prevent any tension or misunderstanding in the future.
 
-I also would like point out that the purpose of this blog is not to provide courses, I only briefly explain what I did in the case that it's a graphist reading me and not a developer. So, most of the schema and explicative screenshoots are not from me (as I alaways tell).
+I'd also like to point out that this blog is not meant to be a course. I explain briefly what I did, in case the reader is an artist rather than a developer. That is why most of the diagrams and explanatory screenshots are not mine, as I always state.
 
-In the futur, if someone else want to enforce his rights on the images on this blog, the childish threats of legal proceedings are unnecessary, however I remain very reactive to any amicable change request.
+In the future, if anyone else wants to enforce their rights over images on this blog, childish threats of legal action are unnecessary. I remain very responsive to any friendly request for changes.

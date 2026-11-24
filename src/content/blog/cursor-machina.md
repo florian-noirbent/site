@@ -1,6 +1,6 @@
 ---
-title: "Cursor machina"
-description: "I am now back in France, and I think it's time to show my final study project. We are a team of 6, and I am mainly working on the gameplay, the rest being level design, the…"
+title: "Cursor Machina: Our End-of-Studies Game"
+description: "Introducing Cursor Machina, our six-person Epitech project: a first-person runner inspired by Mirror's Edge, with time rewind, replays and online scores."
 date: 2014-07-15
 type: devlog
 tags:
@@ -10,12 +10,14 @@ tags:
   - "Student"
 ---
 
-I am now back in France, and I think it's time to show my final study project. We are a team of 6, and I am mainly working on the gameplay, the rest being level design, the "engine", the website with the webservice, the comunication, the large amount of documentation required by my school, etc.
+I'm back in France, and it's time to show my end-of-studies project. We are a team of six. I mainly work on gameplay, while the rest of the work covers level design, the "engine", the website and its web service, communication, and the large amount of documentation my school requires.
 
-It's a first person runner, inspired among others by mirror's edge, the idea is to run accross minimilast levels with a large choice of platform and multiples paths to reach your goal. another key feature is the possibility to reverse time. It allow to work on the parkour, but the clock is not stoped or reversed, which greatly reduce the interest when the purpose is the score. We intend to have a website to share score online. the time shift engine also allow us to save and share replay of the best games, so the purpose is to encourage the creation of a speedrun comunity arround the game.
+Cursor Machina is a first-person runner, inspired among others by Mirror's Edge. The idea is to run through minimalist levels with a wide variety of platforms and multiple paths to the goal.
 
-Here, is the trailer:
+Another key feature is the ability to rewind time. It lets you practice a tricky parkour section again, but the clock is neither stopped nor rewound, so every rewind costs you time. That makes it far less useful when you're chasing a score. Scores will be shared online through our website, and the same time-shift engine lets us record and share replays of the best runs. The goal is to encourage a speedrunning community to grow around the game.
+
+Here is the trailer:
 
 <iframe src="https://www.youtube-nocookie.com/embed/_6tWpmvg67A" title="YouTube video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-If you want to follow the news of the game as I'm not going to systematically republish news here, I higly recommand to like and follow [the facebook of the game](https://www.facebook.com/CursorMachina/timeline) , also, here is the [presentation page of the project](http://eip.epitech.eu/2015/cursormachina/), which will have more content in the upcoming days.
+I won't systematically repost news here, so if you want to follow the game, I highly recommend liking and following [its Facebook page](https://www.facebook.com/CursorMachina/timeline). There is also the [project's presentation page](http://eip.epitech.eu/2015/cursormachina/), which will get more content in the coming days.

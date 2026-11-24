@@ -1,6 +1,6 @@
 ---
-title: "Rocket"
-description: "Finally, Here is the article to introduce the remake of my first game that I mentioned several times. I have stopped the development for now because of the negative feedback: it…"
+title: "Rocket: Remaking My First Game for Multiplayer"
+description: "The multiplayer-focused remake of my first Unity game: five weapons, an energy system and collision damage, and why I put development on hold."
 date: 2013-07-29
 type: devlog
 tags:
@@ -10,36 +10,32 @@ tags:
   - "Student"
 ---
 
-Finally, Here is the article to introduce the remake of my first game that I mentioned several times. I have stopped the development for now because of the negative feedback: it don't really interest peoples, so I decided to not commit more time on it, I could excessively simplify the gameplay until loosing it's interest, my testers are still unable to fly off their rockets.
+Here, at last, is the article on the remake of my first game that I've mentioned several times. I've put development on hold for now because of negative feedback: it simply doesn't grab people. Rather than keep investing time, I stopped before simplifying the gameplay so much that it lost its appeal. My testers still can't manage to get their rockets off the ground.
 
-unlike the first version which was mainly solo, this one is more about multi as the solo should only be a tutorial series to prepare the player. The first version, which now is more than 2 years old, is still available in my [3rd article](/blog/first-game).
+Unlike the first version, which was mostly single-player, this one focuses on multiplayer, with the solo mode meant only as a series of tutorials to prepare the player. The original game, now more than two years old, is still available in [my third article](/blog/first-game).
 
-I finaly managed to find someone able to play it, to make a video:
+I finally found someone who could actually play it, so here's a video:
 
 <iframe src="https://www.youtube-nocookie.com/embed/wN61hV49Arg" title="YouTube video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-## In short:
+## The Game in Brief
 
-The player control a rocket, which as a temporary boost increasing it's power as long as it's holded, but it need energy, this asn't change since the first game. However the weapons did evolve a lot, the player as 5 "weapons":
+The player controls a rocket with a temporary boost that increases thrust for as long as the key is held, at the cost of energy. That part hasn't changed since the first game. The weapons, however, have evolved a lot. The player has five of them:
 
-- A continuous **laser**, that give direct long range shoot and deal a small amount of damage.
+- A continuous **laser** that hits instantly at long range and deals a small amount of damage.
+- **Bombs** that are affected by gravity, inherit the rocket's velocity when fired, and deal heavy damage.
+- A **shield** that must be held down and protects the rocket from frontal fire.
+- A fourth weapon, not implemented yet, meant to be very close to the only weapon of the **first game**: a relatively slow projectile that ignores gravity and doesn't depend on the rocket's velocity.
+- The rocket's exhaust **flames**, intended as a close-combat weapon.
 
-- **Bombs** subject to gravity and inherit the speed from the rocket at the shoot time and deal heavy damage.
+The combat system differs from the first version in two big ways. Weapons now consume energy, so players have to balance mobility against firepower. And violent collisions now deal damage, which discourages flying into the scenery at high speed and also turns ramming into a weapon.
 
-- A **shield** that need to be hold to protect the rocket from frontal shoots.
+For now there's only a free-for-all deathmatch mode. There is no hard player limit, but since the host is also a player (the server runs on one of the players' machines, which has to simulate the game and relay everything to the others), I'd expect performance to degrade somewhere above 15 or 20 players. The most I could test was 4.
 
-- The 4th weapon as not been implemented but it's supposed to be very close to the unique weapon of the **first game**: a relatively slow projectile, not subject to gravity and not depending on the rocket velocity.
+There are two maps, both at the prototype stage: one for two or three players (the first one in the video), and one for four to six players (the second one), which was also designed with team deathmatch in mind.
 
-- The rocket's propulsion **flames** should be a close combat weapon.
+## What's Next?
 
-Two big differences from the first version in the combat system is that now weapons use energy, so the player need to balance it's style between mobility and fire power and now the violent collisions deal damages, which force to not use the decor at high speed, and this can also be used as weapon.
+Development is paused, but unlike the first game, the code is well structured and documented, so I can easily pick it back up if I find a solution to the game design problem. I'll try to get in touch with a (real) game designer to hear their take. I'm afraid, though, that the only fix is to cut the gameplay down even further: most of my testers wanted me to remove gravity and inertia entirely and let the rocket move backward and strafe. In other words, they wanted a top-down shooter. I think the core problem is the initial difficulty. A phrase that comes up often in game design is "easy to learn, hard to master", and right now Rocket is hard to learn.
 
-There is yet only a FFA deathmatch mode, there is no limit on the number of player, but since the host is a player, one can guess that above 15 or 20 players playing conditions decrease (the maximum I could test was 4).
-
-There is 2 maps: one 2 or 3 players, the first in the video and another for 4 to 6 players, the second, which was also built with team deathmatch in mind, they are just at a prototype stage.
-
-## What next ?
-
-I paused the development, but unlike the first game, the code is well structured and documented, so I could easily jump in at any moment if I find a solution to the game design problem. By the way, I'll try to contact a (real^^) game designer so I could hear its thought about it, but I'm afraid the only solution is to slaughter the gameplay even more, most of my testers wanted me to completely remove gravity and inertia, and that the rocket could move backward and strafe, IE they wanted a top-down shooter. I think the core problem is the initial difficulty, a phrase that come often when talking about GD is "easy to learn difficult to master ".
-
-I hesitate to finish it anyway: the engine and the interfaces are done, only left to work out the detail to make it a "Kongregate" nice game (maybe it would find it's public after all). only left map texturing, enhance the FX, add a tuto, make a TDM and CTF mode, and finish the master server integration, but in this kind of production there is the "[90-90](http://en.wikipedia.org/wiki/Ninety-ninety_rule)" rule involved :), and I'm expecting a lot of time to actually end it, so maybe it don't worth the trouble.
+I'm tempted to finish it anyway. The engine and the interfaces are done, and what's left is polishing it into a decent Kongregate game (maybe it would find its audience there after all): texturing the maps, improving the effects, adding a tutorial, adding team deathmatch and capture-the-flag modes, and finishing the master server integration. But projects like this are subject to the [90-90 rule](http://en.wikipedia.org/wiki/Ninety-ninety_rule): the first 90% of the work takes 90% of the time, and the remaining 10% takes the other 90%. I expect finishing it would take a lot of time, so it may not be worth the effort.

@@ -1,6 +1,6 @@
 ---
-title: "China and new projects"
-description: "I'm starting a new school year at Beijing Jiaotong university, I chose to follow all courses about \"computer graphics\" / \"game developement\" and those about software project…"
+title: "A Year in Beijing and New Projects"
+description: "Starting a school year at Beijing Jiaotong University, wrapping up the voxel engine, and an idea for evolving AI spaceships built from blocks."
 date: 2013-09-01
 type: devlog
 tags:
@@ -10,32 +10,34 @@ tags:
 cardImage: /images/blog/china-and-new-projects/bjtu.jpg
 ---
 
-I'm starting a new school year at Beijing Jiaotong university, I chose to follow all courses about "computer graphics" / "game developement" and those about software project management. By the way I need to move the host of all my videos, or at least have a miror on Youku since youtube is not available here. (edit: voilà, it's done, [my Youku channel is here](http://i.youku.com/u/UMTI4NjEwNzM2MA==)).
+I'm starting a new school year at Beijing Jiaotong University. I chose every course on computer graphics and game development, plus the ones on software project management. Since YouTube is blocked here, I also need to move my videos, or at least mirror them on Youku. (Edit: done, [my Youku channel is here](http://i.youku.com/u/UMTI4NjEwNzM2MA==).)
 
-## ![bjtu](/images/blog/china-and-new-projects/bjtu.jpg)
+![Beijing Jiaotong University campus](/images/blog/china-and-new-projects/bjtu.jpg)
 
-About my voxel engine, I'm going to make one last article to show the last updates. As I mentioned in the first article of this series, the purpose was to run a small experiment, I'm somewhat surprised about the time and the complexity this took, I'll still work on it, but occasionally.
+## The voxel engine
 
-In the upcoming weeks, I'll share my new scholar projects, and also an amateur team project that I joined few month ago and contribute to develop (a multiplayer space opera like X rebirth) and also my end-of-study project which is starting slowly (it's a first person runner like mirror's edge).
+I'll write one last article about my voxel engine to show the latest updates. As I said in the first article of the series, it was meant to be a small experiment, and I'm surprised by how much time and complexity it ended up taking. I'll keep working on it, but only occasionally.
 
-So this don't leave much room for a voxel engine right now, moreover I wanted to run other experiment as I said, on emergent behavior, which will likely not end with a polished result. This idea begin to take shape in a space shooter game where the ships are procedurally generated, this should reuse most of the voxel engine and should also give me the opportunity to prototype some of my ideas for the team project I joined.
+In the coming weeks I'll share my new school projects, as well as two others: an amateur team project I joined a few months ago and contribute to (a multiplayer space opera in the vein of X Rebirth), and my end-of-studies project, which is slowly getting started (a first-person runner like Mirror's Edge).
 
-## Experiment about emergent behavior
+That doesn't leave much room for a voxel engine right now. Besides, as I mentioned, I wanted to run other experiments, this time on emergent behavior, which will probably not end up as a polished product. The idea is taking shape as a space shooter with procedurally built ships. It should reuse most of the voxel engine, and it will also give me a chance to prototype some ideas for the team project.
 
-To dwell a bit on this idea right now, The principle would be that a player build it's ship with blocks like in a Lego game, then fight other ships, the first one to receive damage to it's core would explode, each shoot would destroy some part of the ship depending of their resist, the ship should be controlled in third person, and the player would have bound some hotkeys to weapons and engines in the build stage.
+## An experiment in emergent behavior
 
-Each ship will have a budget and each piece a cost. The gravity center will be considered and each piece would have a mass. The player will also need to consider power balance with [a capacitor system like the one in EvE online](https://wiki.eveonline.com/en/wiki/Capacitor), which could be increased with additional batteries (a block) that would be fragile and explosive. I also imagined a conductive block to route the power from batteries to weapons, engines, ... like the minecraft redstone, so the link could be broken in a fight. Actually, the player could think about its ship for a while, but all these feature will depend on the time I can afford to spend on this idea. I also would like the ships to throw drones that would be programmed by the player in an high level language with an API or with a nodal interface at the build stage, like colobot, but I'm starting to dream too much^^.
+Here is the concept. Players build their ship out of blocks, like in a Lego game, then fight other ships. The first ship to take damage to its core explodes. Each shot destroys part of the ship depending on the resistance of the blocks it hits. Ships are flown in third person, and during the build stage the player binds hotkeys to weapons and engines.
 
-This could already be a fun concept for multiplayer, but the thing that would interest me the most about it would be to make an AI that would build its ship itself and evolve it depending on win and loose, with a genetic algorithm that would work in two ways: the shape of the ship and the driving.
+Each ship has a budget and each piece has a cost. Every piece also has a mass, so the center of gravity matters. Players will have to manage their power balance with [a capacitor system like the one in EVE Online](https://wiki.eveonline.com/en/wiki/Capacitor), which can be extended with extra battery blocks that are fragile and explosive. I also imagined conductive blocks that route power from the batteries to the weapons and engines, like Minecraft's redstone, so those links could be severed in a fight. Players could spend a long time designing their ship, but how many of these features make it in depends on how much time I can give this idea. I'd also love ships to launch drones that the player programs during the build stage, either in a high-level language through an API or with a node-based interface, as in Colobot. But I'm getting carried away.
 
-Let alone the lack of time, before starting this project I still need to solve some problems that I don't know yet how to tackle:
+This could already be a fun multiplayer concept, but what interests me most is building an AI that designs its own ship and improves it based on wins and losses, using a genetic algorithm. The idea behind a genetic algorithm is to treat each design as a "genome", let a population of designs compete, keep the best ones, and combine and randomly mutate them to produce the next generation. Here it would work on two fronts: the shape of the ship and the way it is flown.
 
-- The procedural mobile collider: until now the colliders, mesh based, where statics (since it was for a terrain), for a moving object this need to be completely different.
+Lack of time aside, there are several problems I still don't know how to tackle:
 
-- The gameplay: I've seen in my Rocket project that this kind of control are really hard to take in hand for a player and I'm afraid that the result would be a messy and frustrating gameplay. In a certain extant, this is not dramatic because the purpose of this would mostly be about AI's, but if it can be fun for a human, it's a huge bonus.
+- **Procedural moving colliders.** So far my mesh-based colliders were static, since they were built for terrain. A moving object needs a completely different approach.
 
-- As a genetic algorithm evolving the ship shape sound easy to me, as evolving the behavior sound a bit more tricky, I need to more document myself on this area.
+- **Gameplay.** My Rocket project showed me that this kind of control is really hard for players to master, and I'm afraid the result would be messy and frustrating. To some extent that's not a big deal, since the main goal here is the AI, but if it's fun for humans too, that's a huge bonus.
 
-- And of course I need to finalize the voxel engine's part that I'll need to reuse.
+- **Evolving behavior.** Evolving the ship's shape with a genetic algorithm sounds easy enough, but evolving how it is flown looks much trickier. I need to read up on this.
 
-edit December 1st 2013: I'm keeping this idea for now, here is [a related article published meanwhile](http://www.gamedev.net/page/resources/_/technical/artificial-intelligence/light-introduction-to-genetic-programming-r3401), about evolving behavior with genetics algorithm that really interested me, I thing it should be mentioned here. meanwhile [space engineers](http://www.spaceengineersgame.com/) was also released, it use a lot of these ideas, without the artificial intelligence part.
+- And of course, I need to finish the parts of the voxel engine I'll be reusing.
+
+Edit, December 1st 2013: I'm keeping this idea on the shelf for now. In the meantime, [an article on evolving behavior with genetic algorithms](http://www.gamedev.net/page/resources/_/technical/artificial-intelligence/light-introduction-to-genetic-programming-r3401) came out that I found really interesting and that deserves a mention here. [Space Engineers](http://www.spaceengineersgame.com/) was also released, and it uses many of these ideas, minus the AI part.

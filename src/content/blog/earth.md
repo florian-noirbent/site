@@ -1,6 +1,6 @@
 ---
-title: "Earth"
-description: "Here is my second project of computer graphics, there is not a big difference with the last one since I already implemented everything in the first one. He had to add lighting and…"
+title: "Earth in OpenGL's Fixed Pipeline"
+description: "My second computer graphics project: a textured, lit Earth rendered with OpenGL's fixed pipeline, plus a fixed model importer and some blending tests."
 date: 2013-10-22
 type: devlog
 tags:
@@ -10,12 +10,12 @@ tags:
   - "Student"
 ---
 
-Here is my second project of computer graphics, there is not a big difference with the last one since I already implemented everything in the first one. He had to add lighting and texturing this time...
+Here is my second computer graphics project. It isn't very different from the first one: this time the assignment was to add lighting and texturing, which I had already implemented last time.
 
-I fixed my importer and ran some blending test for earth, here is the result:
+So I fixed my model importer and ran some blending tests for the Earth. Here is the result:
 
 <iframe src="https://www.youtube-nocookie.com/embed/Dmt6vjg2JVE" title="YouTube video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-[http://v.youku.com/v\_show/id\_XNjI0NTAyMDc2.html](http://v.youku.com/v_show/id_XNjI0NTAyMDc2.html)
+[Also on Youku](http://v.youku.com/v_show/id_XNjI0NTAyMDc2.html)
 
-Usually I would have directly made a shader for this kind of thing, I was impressed by the rendering one can get using only the fixed pipeline
+Normally I would have written a shader for this kind of effect, so I was impressed by the rendering you can get from the fixed pipeline alone.

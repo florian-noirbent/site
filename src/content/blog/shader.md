@@ -1,6 +1,6 @@
 ---
-title: "shader"
-description: "I needed to learn shader programming in my internship part time this year, because no one knew in the company. I'll introduce it first, then I'll show what shaders I made, but…"
+title: "An Introduction to Shaders"
+description: "A primer on shaders: vertex and fragment programs, post-processing, Phong lighting, bloom and SSAO, and the input/output semantics most tutorials gloss over."
 date: 2013-06-08
 type: technical
 tags:
@@ -9,81 +9,104 @@ tags:
   - "Student"
 ---
 
-I needed to learn shader programming in my internship part time this year, because no one knew in the company. I'll introduce it first, then I'll show what shaders I made, but mainly I'll write what I would have loved to find when I started to look for information: explanation on input and output parameters, since most tutos are extremely vague about it.
+This year I had to learn shader programming during my part-time internship, because nobody at the company knew how to do it. In this article I'll first introduce what shaders are, then present the shaders I wrote. Above all, I want to write what I wish I had found when I started: a clear explanation of input and output parameters, which most tutorials cover only vaguely.
 
-The language actually doesn't really matter, They are all fairly alike and conversion is almost always word to word, at least CG and GLSL, I haven't yet looked into HLSL.
+The language doesn't matter much. Shading languages are all fairly similar, and converting from one to another is almost always a word-for-word translation, at least between Cg and GLSL. I haven't looked at HLSL yet, but Cg was designed alongside it and the two share nearly the same syntax.
 
-## What's a shader ?
+## What is a shader?
 
-[Wikipedia'll tell you more than me](http://en.wikipedia.org/wiki/Shader), but in few words it's a program executed on the GPU, so mainly for display, they are chosen by the programmer when initializing a draw call and give the possibility to get exactly the render you want.
+[Wikipedia covers it in depth](http://en.wikipedia.org/wiki/Shader) (there is also a [French version](http://fr.wikipedia.org/wiki/Shader)), but in short, a shader is a program that runs on the GPU, mostly to produce what ends up on screen. The programmer selects which shaders to use when setting up a draw call, which gives full control over how objects are rendered.
 
-[T](http://fr.wikipedia.org/wiki/Shader)he **vertex shader** is executed for each vertices in the draw call and will at least convert each vertex coordinate from it's object coordinate (relative to it's center) in screen space coordinate (the 2D position where it will appear on the screen).
+The **vertex shader** runs once for each vertex in the draw call. At a minimum, it transforms each vertex from object space (coordinates relative to the object's own origin) into clip space. The GPU then performs the perspective divide and viewport transform to get the 2D position where the vertex lands on screen.
 
-Then come the **fragment shader,** executed for each *'visible'* pixel on the screen and will calculate it's color.
+Between the two programmable stages, the rasterizer turns the transformed triangles into fragments: one candidate pixel for every screen pixel a triangle covers.
 
-I wont discus about the other shader type which can be added to the pipeline, but since the lack of information about it i'd love to talk about it in a upcoming article, nor on the work done by the GPU between shaders (like rasterizer).
+The **fragment shader** (called a pixel shader in Direct3D) then runs once per fragment and computes its color. Note that it runs for every covered pixel, not only for the visible ones: a fragment can still be discarded afterwards by the depth test if another surface is in front of it.
 
-## Postprocess
+I won't cover the other shader stages that can be added to the pipeline here. Information about them is scarce, so I'd like to dedicate a future article to them.
 
-I didn't want to talk imediatly about it but it's necessary ton understand what I did.
+## Post-processing
 
-The [postprocess](http://rbwhitaker.wikidot.com/post-processing-effects) is about applying a shader on the final render of a screen instead of each individual objects. When the scene get rendered it's saved into a texture instead of displayed on the screen ("render to texture"), then to add an effect simply generate a quad (a rectangular mesh) in front of the camera which fill the viewport ("the field of view"), then draw the texture of the scene on this quad while applying the desired effect (blur, change the color tint, [or much more](http://en.wikipedia.org/wiki/Deferred_shading)).
+I need to explain this before going further, because several of my shaders depend on it.
+
+[Post-processing](http://rbwhitaker.wikidot.com/post-processing-effects) means applying a shader to the final image of the scene rather than to each individual object. Instead of being displayed directly, the scene is rendered into a texture ("render to texture"). To add an effect, you then draw a quad (a rectangular mesh) that covers the whole viewport, textured with that image, while the fragment shader applies the effect: blur, color tinting, [and much more](http://en.wikipedia.org/wiki/Deferred_shading).
 
 ## My shaders
 
-Each shader almost demand for it's own article series, but since everything is fully documented on other blogs, I'll just present them quickly
+Each of these shaders could fill a series of articles on its own, but since they are well documented on other blogs, I'll only present them briefly.
 
-phong shading pixel-perfect with normal map and specular map:
+### Per-pixel Phong shading with normal and specular maps
 
-Even trying to be quick, there is a lot to tell, the [phong shading](http://en.wikipedia.org/wiki/Phong_shading) is the usual method for lightning calculation in video games, each object compute it's own lightning independently of the other objects on the scene, it's the addition of an ambient (uniform color ont the scene), a diffuse (color of the object multiplied by the scalar product of the normal by the light source direction), and the specular (a fake reflection using the camera position in the operation).
+[Phong shading](http://en.wikipedia.org/wiki/Phong_shading) is the standard lighting technique in video games. Each object computes its lighting independently of the other objects in the scene, as the sum of three terms:
 
-Pixel perfect mean that the computations described above are done in the fragment program, so for each pixel, unlike the usual method that compute everything in the vertex program, it used for big-really low poly objects, or when quality is more important than speed.
+- **Ambient**: a uniform color applied to the whole scene.
+- **Diffuse**: the object's color multiplied by the dot product of the surface normal and the direction to the light. Surfaces facing the light are bright, surfaces at a grazing angle are dark.
+- **Specular**: a fake reflection of the light source that also depends on the camera position, which produces the shiny highlights.
 
-The specular map is a black and white texture that tell the "intensity of reflection" of each part of the mesh unlike having a uniform property, It have been used for example on old sheets metal, to make the rusty part mat and the normal part shiny .
+"Per-pixel" means these computations run in the fragment program, for every pixel. The cheaper alternative evaluates lighting in the vertex program and interpolates the result across each triangle (Gouraud shading). Per-pixel lighting makes the biggest difference on low-poly objects, where interpolated lighting looks blotchy and highlights get lost between vertices, and wherever quality matters more than speed.
 
-The normal map now..., I struggled the most on this, disrupt the normal of the object according to a texture, it allow to add detail in *trompe-l’œil* without increasing the polygon count.
+A **specular map** is a grayscale texture that defines how reflective each part of the mesh is, instead of using a single value for the whole object. On an old sheet of metal, for example, it keeps the rusty areas matte while the clean metal stays shiny.
 
-It is a quite heavy shader, but with a really realistic look, it is used for augmented reality in real time (integrated 3D objects in a film).
+The **normal map** gave me the most trouble. It perturbs the object's normals according to a texture, so the lighting reacts as if the surface had extra relief. This adds *trompe-l'œil* detail without increasing the polygon count.
 
-Glow/Bloom:
+It's a fairly heavy shader, but the result looks very realistic. It is used for real-time augmented reality, integrating 3D objects into filmed footage.
 
-The bloom is a post process shader that make an object look like it emit light, it work in spreading the shiny part on the adjacent pixels. an additional pass done on the scene define the pixels that will shine (each is drawn in black (normal) and white (illuminated) in this pass. then the post process blur these pixel along horizontal then vertial (no recursion on GPU), here is an illustration from the cinder forum:
+### Glow / bloom
 
-The major inconvenient for my implementation is that the "glow quantity" don't depend on the distance to the camera, it don't mater for it's purpose but a work with the [deth map](http://en.wikipedia.org/wiki/Depth_map) would be needed if we wanted a falloff.
+Bloom is a post-process effect that makes objects look as if they emit light, by spreading their bright areas onto neighboring pixels. An extra render pass draws the scene as a mask: pixels that should glow are drawn in white, everything else in black. The post-process then blurs this mask and adds it on top of the normal image.
 
-SSAO (Screen-space ambient occlusion):
+The blur is done in two passes, first horizontally and then vertically. A Gaussian blur is separable, so two one-dimensional passes give the same result as a full two-dimensional blur at a fraction of the cost: with a kernel of width *n*, each pixel reads 2*n* texels instead of *n*².
 
-The [SSAO](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion) fake an [ambient occlusion](http://en.wikipedia.org/wiki/Ambient_occlusion) for real time (the usual method is applied on static objects only and is very slowly precalculated), this method is approximate but allow to be used on dynamic objects. Again it's a post process shader that compare the deth of each pixel to another random pixel near it's normal, if it's behind it's black else it's white. then a Gaussian blur is applied to the result to remove the noise from the random part of this technique. So the render depend of the camera position and only take into acocunt objects in the field of view, (which produce very visible artifact in some case). I found a nice video illustrating the result: [http://www.youtube.com/watch?v=R\_L-\_oGTbqw](http://www.youtube.com/watch?v=R_L-_oGTbqw).
+The main limitation of my implementation is that the amount of glow doesn't depend on the distance to the camera. That doesn't matter for its intended use, but adding a falloff with distance would require the [depth map](http://en.wikipedia.org/wiki/Depth_map).
 
-## Input and Output parameters
+### SSAO (screen-space ambient occlusion)
 
-It may seem surprising to see me focus on this detail, but it's the one that caused me the most troubles at first, since everything else follow an usual imperative paradigm and just mathematics (trigonometry, matrix algebra and vector operation) from high school level.
+[Ambient occlusion](http://en.wikipedia.org/wiki/Ambient_occlusion) darkens creases, corners and contact areas that ambient light has trouble reaching. The usual approach precomputes it very slowly, so it only works on static objects. [SSAO](http://en.wikipedia.org/wiki/Screen_space_ambient_occlusion) is a real-time approximation that also works on dynamic objects.
 
-Here is a vertex shader from the [nvidia book](http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter01.html) that I highly recommend.
+It is again a post-process. For each pixel, the shader picks random sample points around it, oriented along its normal, and compares their depth with the depth buffer. Samples that end up behind the stored surface are occluded; the more occluded samples, the darker the pixel. A Gaussian blur is then applied to remove the noise introduced by the random sampling.
+
+Because it works only on what's in the depth buffer, the result depends on the camera position and ignores anything outside the field of view, which produces very visible artifacts in some cases. Here is a nice video showing the result: [http://www.youtube.com/watch?v=R\_L-\_oGTbqw](http://www.youtube.com/watch?v=R_L-_oGTbqw).
+
+## Input and output parameters
+
+It may seem odd to focus on this detail, but it's what gave me the most trouble at first. Everything else follows the usual imperative style and only needs high-school math: trigonometry, matrix algebra and vector operations.
+
+Here is a vertex shader from [NVIDIA's Cg Tutorial](http://http.developer.nvidia.com/CgTutorial/cg_tutorial_chapter01.html), a book I highly recommend:
 
 ```hlsl
 struct C2E1v_Output {
-float4 position : POSITION;
-float4 color : COLOR;
+    float4 position : POSITION;
+    float4 color : COLOR;
 };
 C2E1v_Output C2E1v_green(float2 position : POSITION)
 {
-C2E1v_Output OUT;
-OUT.position = float4(position, 0, 1);
-OUT.color = float4(0, 1, 0, 1); // RGBA green
-return OUT;
+    C2E1v_Output OUT;
+    OUT.position = float4(position, 0, 1);
+    OUT.color = float4(0, 1, 0, 1); // RGBA green
+    return OUT;
 }
 ```
 
-The shaders work with semantic (POSITION COLOR, NORMAL TEXCOORD0 to 8) for example, that the vertex program can receive, these input information come from the data saved in the mesh by the graphist. then the input parameters of the fragment program come from the interpolated output parameters of the vertex program.
+### Semantics
 
-To compile, the vertex program need at least to return the POSITION semantic which define the transformed vertex position into the screen space and it can input any other semantic that could be usefull for the fragment program (in the example above, the color is sent from the vertex program).
+Shaders exchange data through **semantics** such as `POSITION`, `COLOR`, `NORMAL` and `TEXCOORD0`, `TEXCOORD1`, and so on. A semantic is a label that tells the GPU which hardware slot a parameter is bound to.
 
-The fragment program to compile need a least return a color, it may also change then output the DEPTH semantic to modify the depth of the fragment, to understand this "2D depth", i'll let you read about "[Z buffer](http://en.wikipedia.org/wiki/Z-buffering)". I used it to merge a video from a 3D camera (color and depth) in a 3D scene, it's not used everyday^^. This depth is not linear and depend of the near and far clip of the camera, I don't know more, documentation is rare and we got our result by dichotomy, just don't expect it to be a distance in the standard unit.
+- The **vertex program's inputs** come from the per-vertex data stored in the mesh by the artist: position, normal, color, texture coordinates.
+- The **vertex program's outputs** are interpolated across each triangle by the rasterizer and become the **fragment program's inputs**.
 
-Then there is the uniform parameters which don't have semantics they are passed to the shader directly in the draw call and are bound by there names, for example the time will be sent like this for a shader changing with the time (or most usually the cosinus of the time for cyclic effects); but we also send lights information this way.
+A vertex program must at least output `POSITION`, the transformed vertex position in clip space. It can also output any other semantic the fragment program needs; in the example above, the vertex program passes a color down to the fragment program.
 
-Input and output parameters have 2 different syntax in Cg, which can be mixed (it confused me a long time), you can ether declare a structure an put your parameters inside (input as output), or you can also declare your parameters in the function with in, and out keywords:
+A fragment program must at least output a color. It can also output the `DEPTH` semantic to override the fragment's depth. To understand what this depth value is, read about the [Z-buffer](http://en.wikipedia.org/wiki/Z-buffering). I used it to merge video from a depth camera (color plus depth) into a 3D scene, which is not something you need every day.
+
+Be careful: this depth is not linear, and it depends on the camera's near and far clip planes, so don't expect a distance in world units. With a standard perspective projection, a point at view distance *z* is stored as *d* = *f* / (*f* − *n*) × (1 − *n* / *z*), where *n* and *f* are the near and far planes: 0 at the near plane, 1 at the far plane, with most of the precision concentrated close to the camera. Documentation on this was scarce, and we ended up finding the right values by bisection.
+
+### Uniforms
+
+**Uniform parameters** have no semantic. The application sets them before the draw call, binding each one by its name, and their value stays the same for every vertex and fragment of that draw. For example, a shader that changes over time receives the current time this way (or more often its cosine, for cyclic effects). Light information is passed the same way.
+
+### Two syntaxes
+
+Cg offers two syntaxes for inputs and outputs, and they can be mixed, which confused me for a long time. You can either declare a structure containing your parameters (for inputs as well as outputs), or declare them directly in the function signature using the `in`, `out` and `inout` keywords:
 
 ```hlsl
 C2E1v_Output C2E1v_green(
@@ -95,6 +118,8 @@ color = float4(0, 1, 0, 1); // RGBA green
 }
 ```
 
-Here I translated the first example, it as exactly the same behavior, it's an easier syntax but also farther than C.
+This is the first example translated to the second syntax, and it behaves exactly the same. (Since the outputs now go through `out` parameters, the function would normally be declared `void`, and the parameters need a comma between them.) This syntax is more concise, but it is further removed from C.
 
-I think I covered the most hard to find information on internet to start shader programming easily, there is more tough subjects like geometry shaders in Cg that I haven't found information apart from the 100 unintelligible pages from the Nvidia's documentation, for the rest the hundreds of other blogs answered my questions.
+## Going further
+
+I think this covers the information that is hardest to find online when starting shader programming. Some topics remain tough, such as geometry shaders in Cg, for which I found nothing beyond NVIDIA's long and dense reference documentation. For everything else, the many other blogs out there answered my questions.

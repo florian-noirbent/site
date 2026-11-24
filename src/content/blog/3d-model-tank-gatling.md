@@ -1,6 +1,6 @@
 ---
-title: "3D model: Tank & gatling"
-description: "I recently found back two 3D models that I did just after the dinosaur to try non organic modeling, unlike to what many designers say, I find it much more difficult: it needed to…"
+title: "Hard-Surface Modeling: A Tank and a Gatling Gun"
+description: "Two hard-surface Blender models made after my dinosaur, and the lesson they taught me: plan the construction, and stop welding every detail into one mesh."
 date: 2013-07-24
 type: devlog
 tags:
@@ -10,12 +10,12 @@ tags:
 cardImage: /images/blog/3d-model-tank-gatling/Tank.png
 ---
 
-I recently found back two 3D models that I did just after the dinosaur to try non organic modeling, unlike to what many designers say, I find it much more difficult: it needed to really imagine the whole construction method before starting, where the dino was more like sculpture, I just had to deform the mesh where I wanted to add details, often on a single layer mesh.
+I recently dug up two 3D models I made right after the dinosaur, to try my hand at hard-surface (non-organic) modeling. Contrary to what many artists say, I find it much harder than organic work. You have to picture the whole construction method before you start. The dinosaur was closer to sculpting: I simply deformed the mesh wherever I wanted to add detail, usually on a single continuous surface.
 
-![Tank](/images/blog/3d-model-tank-gatling/Tank.png)![TankWire](/images/blog/3d-model-tank-gatling/TankWire.png)
+![Rendered tank model](/images/blog/3d-model-tank-gatling/Tank.png)![Wireframe of the tank model](/images/blog/3d-model-tank-gatling/TankWire.png)
 
-Another thing that bothered me with these mesh, they are composed of "flying" polygon , not everything is tied together in fact, it may seem obvious to someone who is used to it, but before I was told, in my rough draft, everything was tied together with often unnecessary triangles and a twisted design, for example the screws were extruded from the plate on which they were supposed to be placed, imagine the mesh topology and imagine the time to reproduce this exact same screw to a dozen places ....
+The other thing that surprised me is that these meshes are made of "floating" pieces: not everything is connected. Separate parts such as bolts or plates are simply placed against the surface they belong to instead of being welded into it. That may sound obvious to experienced modelers, but until someone told me, my first drafts had everything stitched together, with plenty of unnecessary triangles and twisted topology. The screws, for example, were extruded out of the plate they were supposed to sit on. Imagine the resulting topology, and imagine the time it takes to reproduce that exact same screw in a dozen places. With a separate object, you model the screw once and duplicate it.
 
-I also modeled and animated arms with the gatling for a first person camera.
+I also modeled and animated a pair of arms holding the gatling gun, for a first-person view.
 
-![gatlingWire](/images/blog/3d-model-tank-gatling/gatlingWire-1024x255.png)![gatling](/images/blog/3d-model-tank-gatling/gatling.png)
+![Wireframe of the first-person arms and gatling gun](/images/blog/3d-model-tank-gatling/gatlingWire-1024x255.png)![Rendered first-person arms and gatling gun](/images/blog/3d-model-tank-gatling/gatling.png)

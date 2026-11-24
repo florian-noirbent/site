@@ -1,6 +1,6 @@
 ---
-title: "Hexa"
-description: "The last few days I wanted to develop a hexagonal tile engine, by the way make a small 2D game engine using SFML, and also programm a A pathfinding Here is the result: The…"
+title: "Hexa: A Hexagonal Tile Engine with A* Pathfinding"
+description: "A small C++ and SFML 2D engine with a hexagonal tile map and A* pathfinding, plus the coordinate pitfalls of drawing and picking hexagons."
 date: 2014-08-25
 type: devlog
 tags:
@@ -11,20 +11,28 @@ tags:
 cardImage: /images/blog/hexa/hexa.jpg
 ---
 
-The last few days I wanted to develop a hexagonal tile engine, by the way make a small 2D game engine using SFML, and also programm a A\* pathfinding
+Over the last few days I set myself three goals: build a hexagonal tile engine, write a small 2D game engine on top of SFML along the way, and implement A\* pathfinding.
 
 Here is the result:
 
-![hexa](/images/blog/hexa/hexa.jpg)
+![Hexagonal grid with A* pathfinding, each tile showing its H and G scores](/images/blog/hexa/hexa.jpg)
 
- The technological choice is mainly because I wanted to code some C++ again, and I also wanted to make my own game engine for a while, even if make it on unity wouldn't even have takken half a day. for now it include game loop, input manager, game scene manager and GUI manager using SFGUI. I would gladly share it, but I'm sure the time needed to get in my engine without documentation is superior to the time needed to remake it from scratch.
+## Why C++ and my own engine
 
-It's the first time I use A\*, but I already presented it 2 years ago, to explain my algorythm choice on my end of 3rd year project, so I'm sending you to [that article](/blog/pathfinding-end-of-year-project-part-3), to resum, every case is defined by its cost to come there "G score" added to the estimated cost to the destination "H score", on the screenshoot, first line is H, second is G on every case, so for an obstacle free map this sum is constant, then one just need to always take the smaller value to have the best chances to find quickly the shortest path.
+I mainly picked these tools because I wanted to write some C++ again, and I had wanted to build my own game engine for a while, even though doing this in Unity wouldn't have taken half a day. For now, the engine has a game loop, an input manager, a scene manager and a GUI manager based on SFGUI. I'd gladly share it, but without documentation, getting into it would take longer than rewriting it from scratch.
 
-About the hexagonal tile engine, I'm sending you to R[ed blob games website](http://www.redblobgames.com/grids/hexagons/), which almost answered all my questions.
+## A\* pathfinding
 
-I'd like to share the main problems, I met: first, know where to draw the tile, to do that, I used a non orthonormal space, I'm sharing you the paint draft I used.
+This is the first time I've actually implemented A\*, although I described it over a year ago when explaining the algorithm I chose for my end-of-third-year project, so I'll refer you to [that article](/blog/pathfinding-end-of-year-project-part-3) for the details. In short, each cell gets a score that adds two values: the G score, the cost of reaching it from the start, and the H score, the estimated cost from there to the destination. On the screenshot, the first line in each cell is H and the second is G. On a map without obstacles, this sum stays constant along the shortest path and only grows for cells that stray from it. By always expanding the cell with the smallest sum, the algorithm reaches the destination quickly while still guaranteeing the shortest path.
 
-![Hexa coord](/images/blog/hexa/Hexa-coord.jpg)
+## Hexagonal tiles
 
-Then I needed to know wich hexagon my mouse is over, the naive implementation was to reverse display function, but what's working for square don't neccesarly work for hexagon, this solution is working but give a very aproximative result as the "hitbox", was in fact a parralelogram following the coordinate system, so I decided in a first time that I would take the distance between my mouse and the center of the hexagon, for the hexagon I found and its neighbors, to select the nearest. And here I got a glitch that made me lost half a day: the pythagorean theorem of course work in a rectangular triangle, and of course in a non orthonormal space, coordinate don't form rectangular angle, so *"distance = sqrt((x1 - x2)² + (y1 - y2)²)"* is false...
+For hexagonal grids in general, I'll point you to the [Red Blob Games website](http://www.redblobgames.com/grids/hexagons/), which answered almost all my questions.
+
+I'd still like to share the main problems I ran into. The first was knowing where to draw each tile. Hexagons don't line up on a square grid, so I used a non-orthonormal coordinate system: two axes that are not perpendicular, following the directions of the hexagon rows. Here is the rough sketch I made in Paint:
+
+![Sketch of the skewed coordinate system used to position hexagons](/images/blog/hexa/Hexa-coord.jpg)
+
+Next, I needed to know which hexagon the mouse is over. The naive approach is to invert the drawing function, but what works for squares doesn't necessarily work for hexagons. It does give an answer, but only a rough one, because the "hitbox" it produces is actually a parallelogram aligned with the coordinate axes, not a hexagon. So I refined it: take the hexagon found this way along with its neighbors, measure the distance from the mouse to each of their centers, and select the nearest one.
+
+And this is where a bug cost me half a day. The Pythagorean theorem only holds in a right triangle, and in a non-orthonormal system the axes are not at right angles, so *"distance = sqrt((x1 - x2)² + (y1 - y2)²)"* gives the wrong answer when applied directly to the skewed coordinates. Distances have to be measured in an orthonormal system, for example by converting both points back to screen coordinates first.

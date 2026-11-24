@@ -1,6 +1,6 @@
 ---
-title: "Voxel engine, part 3"
-description: "I forgot to publish this article few weeks ago. As said previously, this is the last article about the voxel engine before a while. Voxels I realized that I didn't talked about…"
+title: "Voxel Engine, Part 3: Voxel Data and Lighting"
+description: "How each voxel fits in 4 bytes, how colored and sun light propagate through the terrain, and my first experiments with non-cubic block shapes."
 date: 2013-10-04
 type: technical
 tags:
@@ -11,42 +11,40 @@ tags:
 cardImage: /images/blog/voxel-engine-part-3/voxelEngineLightning.png
 ---
 
-I forgot to publish this article few weeks ago. As said previously, this is the last article about the voxel engine before a while.
+I forgot to publish this article a few weeks ago. As I mentioned before, it will be my last article about the voxel engine for a while.
 
 ## Voxels
 
-I realized that I didn't talked about the way data are stored in memory, but it is important to understand how work the lighting.
+I realized I never explained how the data is stored in memory, and it matters for understanding how the lighting works.
 
-Each voxel is made of 4 byte :
+Each voxel takes 4 bytes:
 
--1 byte of Type: from the type is deducted a lot, with some lookup tables, for example the texture to use, the transparency, the "traversability", the material, the lighting diffusion properties, etc. A lookup table is just an array holding in formation of each type, the index used being the type, for example to know if a case is transparent: isTransparent\[voxels\[x,y,z\].type\]
-
--1 byte of subtype, hold additional information: this bit meaning depend of the type, for example for a regular bloc, the subtype will hold the shape and it's orientation.
-
--2 byte of lighting: each bytes is subdivided in 2, so I get 4 values between 0 and 15, inside are stored the light color in that voxel after the lighting pass (again the lighting information are in a lookup table). These 4 values are red, green, blue and "sun".
+- **1 byte for the type.** A lot is derived from the type through lookup tables: the texture to use, transparency, whether entities can pass through it, the material, how it diffuses light, and so on. A lookup table is simply an array holding one entry per type, indexed by the type. For example, to know whether a cell is transparent: `isTransparent[voxels[x, y, z].type]`.
+- **1 byte for the subtype**, which holds additional information. Its meaning depends on the type; for a regular block, for example, the subtype stores the block's shape and orientation.
+- **2 bytes for lighting.** Each byte is split into two 4-bit halves, which gives four values between 0 and 15. They store the light in that voxel after the lighting pass (the lighting properties themselves are, again, in a lookup table). The four values are red, green, blue and "sun".
 
 ## Lighting
 
-To talk a bit more on lighting, these 4 information (RGBS) are then given to the vertex in its color buffer, mixing the colors of the 4 superior voxel that the vertex is the center, depending on its normal.
+These four values (RGBS) are then passed to the vertices through the mesh's color buffer. Each vertex is shared by four voxels on the side its face points to (the direction of its normal), and the vertex color is the mix of those four voxels' light.
 
-Why a "sun" channel ? This give the opportunity to make a day and night cycle without recalculating the lighting, the combination being done in the shader. With this technique, we can get artificial light of 4096 distinct colors varying depending of the state of the day/night cycle, also artificial lights can be filtered when they get through some kind of blocs, but the drawbacks is that the sun light can't be decomposed in a filter (a colored glass for example).
+Why a "sun" channel? It makes a day/night cycle possible without recomputing the lighting, since the combination happens in the shader. With this technique, artificial light can take 4,096 distinct colors (16 levels for each of the three channels), independently of where the day/night cycle is. Artificial light can also be filtered when it passes through certain blocks, but the drawback is that sunlight can't be split into colors by a filter (colored glass, for example).
 
-Getting this feature would require too much space, before the compute time, it's the RAM usage that need to be optimized in a voxel engine, because there is billions of loaded cubes. For example, right now, 36 864 000 cubes are loaded (this value ignore empty chunk optimization but also the superior suppression distance: 32 x 32 x 32 x 15 x 15 x 5), so the map takes 47 456 000 bytes (or 147 mega), it would still be possible to go from 4 to 8 bytes per voxels (it's loosing smart phone but it's not my goal anyway) but it need to worth it, for a physcis simulation or a fluid simulation, etc. for memory alignment reasons, the voxel size need to be a multiple of 4, so if I decide to add data, I'll have to directly double the storage size.
+Supporting that would take too much space. In a voxel engine, RAM usage needs optimizing even before compute time, because tens of millions of cubes are loaded at once. For example, I currently load 36,864,000 voxels: chunks of 32 × 32 × 32 voxels, in an area of 15 × 15 × 5 chunks. This figure ignores the empty-chunk optimization, and also the fact that chunks are unloaded at a greater distance than the one they're loaded at. The map therefore takes 147,456,000 bytes, about 147 MB. Going from 4 to 8 bytes per voxel would still be possible (phones would be out of reach, but they aren't my target anyway), but it would have to be worth it, for a physics or fluid simulation, for example. For memory alignment reasons, the voxel size has to be a multiple of 4 bytes, so adding any data at all means doubling the storage.
 
-The light propagation is simple, I already explained the lit-air / dark-air principle for the sun light, them I just loop over the array and for each case casting light, a recursive function is started to propagate it, the intensity is decreased each cell depending of the crossed blocs properties. when each channel is 0 of inferior to the evaluated bloc, the recursion end, the range being of 15 cases maximum (the 4 bits gradient)
+Light propagation is simple. I already described the lit-air/dark-air principle for sunlight. For the other lights, I loop over the voxel array, and for each light-emitting cell I start a recursive function that spreads its light. The intensity decreases at each cell depending on the properties of the blocks it crosses. The recursion stops when every channel is equal to or lower than the light already in the cell being evaluated, so a light reaches at most 15 cells (the range of a 4-bit gradient).
 
-![voxelEngineLightning](/images/blog/voxel-engine-part-3/voxelEngineLightning.png)
+![Voxel terrain showing the ambient occlusion produced by the lighting](/images/blog/voxel-engine-part-3/voxelEngineLightning.png)
 
-I don't have any cave to show it's effect right now, but on this screenshot we still can see the ambient occlusion generated automatically with this lighting algorithm: the intensity of a vertex is defined by the average of the 4 surrounded voxels, an opaque bloc being considered as without light, so the corners remove 75% of the light intensity, the edges 50% and the angles 25%.
+I don't have any caves to show the full effect yet, but this screenshot already shows the ambient occlusion that falls out of this lighting algorithm for free. A vertex's intensity is the average of its four surrounding voxels, and an opaque block counts as having no light. So a vertex in an inside corner, where three of the four voxels are opaque, loses 75% of its intensity; a vertex along an edge where two are opaque loses 50%; and a vertex with a single opaque neighbor loses 25%.
 
-## Multiples shapes
+## Multiple shapes
 
-The result of my experiment on this were pretty average, I tried to decompose my cubes in tetrahedron to see if it could work, so I made some standard tetrahedron with origami to visualize the shape easily but I quickly gave up this to regular tetrahedron this time with blender, result where more interesting but still not what I'd like to have.
+My experiments here gave fairly average results. I tried decomposing my cubes into tetrahedra to see whether that could work. I folded some tetrahedra in origami to visualize the shapes easily, but soon switched to regular tetrahedra, this time in Blender. The results were more interesting, but still not what I'm after.
 
-![CAM00001](/images/blog/voxel-engine-part-3/CAM00001-768x1024.jpg)
+![Origami tetrahedra used to visualize the shapes](/images/blog/voxel-engine-part-3/CAM00001-768x1024.jpg)
 
-![thetrahedron](/images/blog/voxel-engine-part-3/thetrahedron.png)
+![Regular tetrahedra modeled in Blender](/images/blog/voxel-engine-part-3/thetrahedron.png)
 
-Finally I think I'll make a canonical position for each shape, then place it with a matrix (rotation and translation). I originally left aside this possibility because it looked too heavy for a complete terrain, but with my new purpose for this engine, it should be perfect.
+In the end, I think I'll define each shape once in a canonical position, then place it with a matrix (rotation and translation). This also solves the code duplication problem from [part 2](/blog/voxel-engine-part-2), since one generation function per shape covers every orientation. I originally set this option aside because it looked too heavy for an entire terrain, but with the new direction I've chosen for this engine, it should be perfect.
 
-I gave up dual contouring before, to follow the example of the Blockscape developers as I said, but in their last articles they said they reworked their engine to use dual contouring, and they said they have a huge performance boost with the obvious enhanced quality result, this made me doubt about the path I chose, maybe I should follow the movement too and give it a second try, but I don't have the time for it right now.
+I gave up on dual contouring earlier, following the Blockscape developers' example. In their latest articles, however, they explain that they reworked their engine to use dual contouring and got a huge performance boost, on top of the obvious gain in quality. That made me question the path I've chosen. Maybe I should follow suit and give it a second try, but I don't have time for it right now.

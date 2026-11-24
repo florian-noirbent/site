@@ -1,6 +1,6 @@
 ---
-title: "Test using unreal engine 4"
-description: "Dernièrement je me forme à l’utilisation de l'unreal engine 4, on peut programmer en C++, mais Epic games à aussi développer un système d'interface nodal pour programmer. J'ai…"
+title: "First Tests with Unreal Engine 4"
+description: "A small multiplayer prototype built entirely with Unreal Engine 4's Blueprint visual scripting, and when it makes sense to drop down to C++."
 date: 2014-09-15
 type: devlog
 tags:
@@ -11,18 +11,18 @@ tags:
 cardImage: /images/blog/test-using-unreal-engine-4/blueprint-AI-1024x543.png
 ---
 
-Dernièrement je me forme à l’utilisation de l'unreal engine 4, on peut programmer en C++, mais Epic games à aussi développer un système d'interface nodal pour programmer. J'ai d'abord commencé en C++ pour mes premier test, l'interface nodal étant un apprentissage supplémentaire, mais sur cette démo j'en suis arrivé à un projet 100% blueprint (le nom de l'interface). J'ai fait ce choix parce que la programmation en blueprint permet de s'affranchir des temps de compilation (qui sont étonnamment long lorsque l'ont compile un projet UE4) et pour avoir une intégration parfaite avec l’éditeur. Ce qui apporte des temps de prototypage très cours, pour peut que l'ont sache s'en servir efficacement.
+I've recently been learning Unreal Engine 4. You can program it in C++, but Epic Games has also built a node-based visual scripting system called Blueprint. I started with C++ for my first tests, since Blueprint meant learning one more tool, but this demo ended up as a 100% Blueprint project. I made that choice for two reasons: Blueprint avoids compilation times (which are surprisingly long for a UE4 project), and it integrates seamlessly with the editor. The result is very short prototyping times, provided you know how to use it efficiently.
 
-Voici à quoi ça ressemble, ceci est le script de mon IA:
+Here's what it looks like. This is the script for my AI:
 
-![blueprint AI](/images/blog/test-using-unreal-engine-4/blueprint-AI-1024x543.png)
+![The AI script built as a Blueprint node graph](/images/blog/test-using-unreal-engine-4/blueprint-AI-1024x543.png)
 
-Bien sur c'est un peu plus long à exécuté que du code C++, mais les API blueprint et C++ étant identique il est très facile de réécrire les parties posant des problèmes de performance en C++, une bonne pratique étant à mon avis d'identifier c'est partie au moment de conception (voxel engine, AI élaboré, etc) de les programmer en C++ puis de les exposer au blueprint ou y est programmer le gameplay.
+Of course, Blueprint runs somewhat slower than C++. But since the Blueprint and C++ APIs are identical, it's very easy to rewrite performance-critical parts in C++. In my opinion, the best practice is to identify those parts at design time (a voxel engine, elaborate AI, etc.), write them in C++, and expose them to Blueprint, where the gameplay is scripted.
 
-Voici une petite vidéo de de mon projet de tests:
+Here's a short video of my test project:
 
 <iframe src="https://www.youtube-nocookie.com/embed/BOVaQUbBcl8" title="YouTube video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-update: youku miror http://v.youku.com/v\_show/id\_XNzgyOTY4NDYw.html
+Update: [Youku mirror](http://v.youku.com/v_show/id_XNzgyOTY4NDYw.html)
 
-Le multijoueur est fonctionnel, même si il s'agit de bot. Comme d'habitude si quelqu'un pense que les sources peuvent lui être utile, je me ferrai un plaisir de les partager.
+Multiplayer works, even though the other players in the video are bots. As usual, if anyone thinks the source code could be useful to them, I'll be happy to share it.

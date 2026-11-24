@@ -1,6 +1,6 @@
 ---
-title: "Bomberman"
-description: "I continue the presentation of my projects with a bomberman 3D I made in my second years at Epitech. Once again it's hard to find a scree,shot, it works on linux, in C++ with…"
+title: "Bomberman 3D: Lessons from My First OpenGL Game"
+description: "A 3D Bomberman in C++ and OpenGL from my second year at Epitech, and the mistakes I made with rendering, particles and AI."
 date: 2013-04-27
 type: devlog
 tags:
@@ -11,20 +11,24 @@ tags:
   - "Student"
 ---
 
-I continue the presentation of my projects with a bomberman 3D I made in my second years at Epitech. Once again it's hard to find a scree,shot, it works on linux, in C++ with glut, openGL and a library from my school to load animated models in fbx. In this project, i worked on a particle generator, for the bomb's explosion, an IA, and of course game mechanics and rendering.
+Next up is a 3D Bomberman I made in my second year at Epitech. Once again, screenshots are hard to come by. It runs on Linux and is written in C++ with GLUT, OpenGL and a library provided by my school for loading animated FBX models. On this project, I worked on a particle generator for the bomb explosions, the AI, and of course the game mechanics and rendering.
 
-to ilustrate with google again, it looked almost like this (without the GUI^^):
+Since this was my first time using OpenGL, it seems worth going over the mistakes I made, in case it saves someone from repeating them.
 
-It seams interesting to come back on the mistakes I made in this first time with openGL, if it can prevent someone to reproduce them:
+## Rendering
 
-## Display:
+At the time I didn't understand how the GPU pipeline works, and I naively followed tutorials from the Site du Zéro (a French programming tutorial site). I used the old immediate-mode functions, `glBegin()` and `glEnd()`, which send every vertex from the CPU to the GPU one call at a time, every frame, instead of uploading the geometry once into a VBO (vertex buffer object) that stays in GPU memory. On top of that, every crate, wall, character and bomb made its own separate calls. The result was a noticeable slowdown as soon as the map grew beyond 100x100, with only a few thousand polygons on screen.
 
-I didn't know the GPU's pipeline at this time, and I followed naively tutorials from the "site du 0"(french web site about programming), I used the old functions glBegin() and glEnd(), instead of going with a VBO (vetex buffer object), and every crates, walls, characters and bombs used it's own call to these functions, which has noticeable slow as soon as the map exceed 100x100 (for only few thousands polygon).
+## Particle Generator
 
-## Particle Generator:
+This one gave me a hard time. The basic idea is a `ParticleGenerator` class holding a list of quads. Each `Update()` moves the particles according to their properties (speed, direction, applied forces and so on) and spawns new ones from a pool, and `Draw()` simply renders the list of quads.
 
-I have struggled on this, the base concept is to have a "ParticleGenerator" class holding a list of quads, every Update() move them according to their characteristic (speed, direction, applied forces,...) then instantiate -from the pool- new particles, and Draw() call just render the quad list. on paper it's easy, in practice, particles are always transparent. When you draw transparency, triangles behind must have been randered first, or there is very noticeable artifact, the first solution I found was too sort particles with their distance from the camera, every frame, but performance where too poor. The second solution as been to disable the Zbuffer writing while rendering the particles, ie, it's like every particle are always in front, which give totally acceptable rendering if every particles have the same color, and it was the case. There is no perfect solution when it comes to transparency in 3D real time rendering, it's only about finding an acceptable compromise in a given situation, the only thing that is always true is to render every opaque objects first.
+That's easy on paper. In practice, particles are almost always transparent, and transparent surfaces have to be drawn after whatever lies behind them, or you get very visible artifacts. My first solution was to sort the particles by distance from the camera every frame, but performance was too poor. The second was to disable depth-buffer writes while drawing the particles. They are still hidden by opaque geometry in front of them, but they no longer hide each other, so the drawing order between particles stops mattering. This gives perfectly acceptable results when all the particles have the same color, which was the case here.
 
-## AI:
+There's no perfect solution for transparency in real-time 3D rendering; it's always about finding an acceptable compromise for a given situation. The one rule that always holds is to render all opaque objects first.
 
-The mistake I made about the AI, is to not incorporate it into the design, I just though "I'll see at the end". When I got there, and I finally asked myself how to code it, I realized that I had nothing for an heuristic, the "map" was saved in a list of block, the only information I had was to know if the IA currently collide . No way to build a pathfinding with that, so I ended with a multiplayer only game. Since that, I always start by designing the IA, think about how it will works, what information will I need. Usually it need a 2D array with weighted squares according to their "traversability" for movements, but there is always more complex subjects like anticipate the line of sight, running away smartly, that need extra data in scene to help the AI to locate itself in the environment.
+## AI
+
+My mistake with the AI was not building it into the design from the start. I just thought, "I'll deal with it at the end." When I got there and finally asked myself how to code it, I realized I had nothing to base a heuristic on. The map was stored as a flat list of blocks, and the only information available was whether a character was currently colliding with something. There was no way to build pathfinding on top of that, so the game ended up multiplayer-only.
+
+Since then, I always start by designing the AI: how it will work and what information it will need. Usually that means a 2D grid where each cell is weighted by how easy it is to traverse, which pathfinding algorithms can work with directly. More complex behaviors, like anticipating lines of sight or fleeing intelligently, need extra data in the scene to help the AI understand its surroundings.

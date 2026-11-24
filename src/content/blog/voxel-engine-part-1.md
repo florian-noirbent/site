@@ -1,6 +1,6 @@
 ---
-title: "Voxel engine, part 1"
-description: "I'm going to talk about a work in progress project for the first time, but first, in the second article I said I was working on a remake of my first game. Well I have stoped this…"
+title: "Voxel Engine, Part 1: An Infinite Terrain in Unity"
+description: "The first prototype of my infinite voxel terrain in Unity, three ways to extract its surface, and why Minecraft's cubes are a game design choice more than a technical one."
 date: 2013-06-23
 type: technical
 tags:
@@ -12,44 +12,40 @@ tags:
 cardImage: /images/blog/voxel-engine-part-1/marshing-cube-house.png
 ---
 
-I'm going to talk about a work in progress project for the first time, but first, in the second article I said I was working on a remake of my first game. Well I have stoped this project, because there is no one to test it. I said in the introduction that I was making games for myself but thinking at it twice it doesn't really make sense especially for a multiplayer one. The project is working and I'll show it as soon as I have someone to make a video.
+This is the first time I'm writing about a project that is still in progress. Before getting into it, a quick update: in an earlier post I said I was remaking my first game. I have put that project on hold because I have nobody to test it with. I wrote in my introduction that I make games for myself, but on second thought that doesn't really hold up, especially for a multiplayer game. The remake works, and I'll show it as soon as I find someone to record a video with.
 
-So I planned for the next weeks to make experiment project, I'd like to try emerging behavior, like reinvent the [game of life](http://fr.wikipedia.org/wiki/Jeu_de_la_vie) in my own may. But now I started to develop an infinite terrain generator from voxels, like I said I wanted to.
+My plan for the coming weeks was a series of small experiments. I'd like to explore emergent behavior, for example by reinventing the [Game of Life](http://fr.wikipedia.org/wiki/Jeu_de_la_vie) in my own way. In the meantime, though, I started what I said I wanted to build: an infinite terrain generator based on voxels.
 
-I hesitated a lot between C++ and Unity: C++ bring performance, freedom and make optimization easier. Unity mainly brings me constraints in fact, but a framework like this on Unity open a lot of possibilities to share and interesting reuse, so I chose this solution.
+I hesitated for a long time between C++ and Unity. C++ brings performance and freedom, and makes optimization easier. Unity mostly brings constraints, but a voxel framework built on Unity can be shared and reused in many interesting ways, so that's what I chose.
 
-To build a framework that could easily be integrated in another project, I wanted at first be the most coupled as possible, IE, make possible the usage of lights, rigidbodys, etc in a transparent way. For now it's the case, but I'll certainly will surrender some possibilities for the future version so Unity will lose much of its interest, but right now advanced lightening computation are impossible and using a mesh collider to evaluate physics from triangles -while every needed information could be taken directly from the voxels- is very ineficient (mesh colliders generation take about 90% of the computation time right now!).
+To make the framework easy to drop into another project, my first goal was to integrate it as tightly as possible with Unity: lights, rigidbodies and the rest of the engine should work on the terrain transparently. That is the case today, but I will probably have to give up some of this in future versions, which removes much of Unity's appeal. Right now, advanced lighting computations are out of reach, and using a mesh collider to compute physics from triangles, when everything the physics needs could be read directly from the voxels, is very inefficient: generating the mesh colliders currently takes about 90% of the computation time.
 
-\*The original Unity Web Player demo is no longer available.\*
+*The original Unity Web Player demo is no longer available.*
 
-A glitch may display Escape instead, while i'm fixing it you can use this link.
+Controls: ZQSD/WASD to move, the mouse to rotate the camera, left click to add voxels and right click to remove them (hold the button in marching cubes mode).
 
-ZQSD/WASD to move, mouse for the camera rotation, left click to add, right click to delete (hold in marching cube)
+Three buttons switch between isosurface extraction methods, that is, the different ways of turning the voxel grid into a visible surface:
 
-There is three buttons to switch between isosurface extractions:
+- **Cubes**: Minecraft-style blocks.
+- **Marching cubes**: a smooth surface.
+- **Hybrid marching cubes**: plain marching cubes fed with saturated values, which brings back some sharp angles (see *Game design* below for why).
 
--cube, minecraft style blocks
-
--marching cube, smooth render
-
--marching cube hybrid, juste a marching cube with saturated values to get back some angles, (see *game design* for the reason)
-
-The terrain is infinite in the 6 directions.
+The terrain is infinite in all six directions.
 
 ## Game design
 
-Before starting this experimentation, I naively imagined that minecraft and all its clones represented their voxels by cube because it was easier. Actually implementing other extraction is a bit more complex, but no matter which solution is chosen, the time to implement it stay really small compared to the time needed for a full game. I think they all use cubes for the "Lego" side: it make building easy; I tried to build a house in the marching cube version it was definitively not fun. That's why i tried a saturated marching cube version, to get back the build side, but I don't really believe we can get back the fast and fun that we have in building dirt houses in minecraft. Well, a voxel engine don't have to be about making a minecraft clone either, and we can have a game not about building stuff at all, I'm thinking about a Worms like game for example.
+Before starting this experiment, I naively assumed that Minecraft and all its clones used cubes because they were easier. Other extraction methods are indeed a bit more complex to implement, but whichever one you choose, the implementation time stays tiny compared to the time a full game takes. I think they all use cubes for the "Lego" feel: cubes make building easy. I tried to build a house in the marching cubes version, and it was definitely not fun. That's why I tried the saturated marching cubes version, to get the building side back, but I doubt it can ever match how quick and fun it is to build a dirt house in Minecraft. Then again, a voxel engine doesn't have to be about making a Minecraft clone, and a game doesn't have to be about building at all. A Worms-like game, for example, would be a good fit.
 
-![marshing cube house](/images/blog/voxel-engine-part-1/marshing-cube-house.png)
+![A lumpy house built with the marching cubes mode](/images/blog/voxel-engine-part-1/marshing-cube-house.png)
 
-*Looks like yoda's house on Dagobah.*
+*Looks like Yoda's house on Dagobah.*
 
 ## What next?
 
-I'll first try some other isosurface extraction algorithms, first [dual contouring](http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf) which seams to have [promising result](http://procworld.blogspot.fr/)s, I also discovered [adaptative skeleton climbing](http://www.cse.cuhk.edu.hk/~ttwong/papers/asc/asc.html), which seems to allow to generate multiple [LOD](http://fr.wikipedia.org/wiki/Level_of_detail) in a very effective way, and i'd like to try some homemade algorithms using a base of predefined geometry to make the map look like the saturated marching cube but with an easy case by case based edition. I discovered a project using a similar approach: [blockscape](http://www.blockscape.com/v2/), which seems to be a nice compromise between visual quality, and ease of editing for a player. and there is still the possibility to combine multiple method like [starforge](http://www.starforge.com/) do, to differentiate the terrain, in marching cube and the cubic constructions.
+First, I'll try other isosurface extraction algorithms. The first is [dual contouring](http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf), which seems to give [promising results](http://procworld.blogspot.fr/). I also came across [adaptive skeleton climbing](http://www.cse.cuhk.edu.hk/~ttwong/papers/asc/asc.html), which looks like a very efficient way to generate several [levels of detail (LOD)](http://fr.wikipedia.org/wiki/Level_of_detail). I'd also like to try a homemade approach built on a set of predefined shapes: the map would look like the saturated marching cubes version, but players could edit it block by block. I found a project that takes a similar approach, [Blockscape](http://www.blockscape.com/v2/), which strikes a nice balance between visual quality and ease of editing. There is also the option of combining several methods, as [StarForge](http://www.starforge.com/) does, with marching cubes for the natural terrain and cubes for player constructions.
 
-Once I'm decided in which method I want to use for my framework, I'll implement it with compute shaders (my article about it will also be an occasion to talk about my tries with CUDA and openCL), and i'll delete the other methods. One can think it's sad not to keep every possibility for a framework, but too much thing will depend on it to be able to support à bunch of different methods (shaders, physic, dynamic light mapping, maybe fluids ...)
+Once I've settled on the method for the framework, I'll implement it with compute shaders (that article will also be a chance to talk about my experiments with CUDA and OpenCL), and I'll remove the other methods. It may seem a shame for a framework not to keep every option open, but too many systems will depend on the surface representation (shaders, physics, dynamic light mapping, maybe fluids...) to support a whole range of methods.
 
-In another domain, I'd like to study terrain generation algorithms, try different type of noises, and merge them to get a realistic terrain while staying efficient enough for real time on GPU, it's almost another project, and the small preview I got of it made me discover how complex this subject is.
+On a different front, I'd like to study terrain generation: try different types of noise and combine them to get a realistic terrain that is still cheap enough to generate in real time on the GPU. That is almost a project of its own, and the small glimpse I've had of it showed me how deep the subject is.
 
-But right now I need to rework on the data structure of chunks, the ruptures you can see in editing the marching cube come from the fact that I can't access neighboring chunks quickly.
+The most urgent task, though, is to rework the chunk data structure. The seams you can see when editing the terrain in marching cubes mode exist because a chunk can't quickly access its neighbors, and marching cubes needs the neighboring voxels to build a continuous surface across chunk borders.

@@ -1,6 +1,6 @@
 ---
-title: "Voxel engine, part 2"
-description: "It's been almost a month I havn't spoken about my voxel engine and it's time for an update. I temporarily dropped compute shaders because I have to few opportunities to work with…"
+title: "Voxel Engine, Part 2: Chunks, Transparency and Colliders"
+description: "A multithreaded chunk pipeline, the infinite-height lighting problem, transparent voxels, and a mesh collider that merges faces into large rectangles."
 date: 2013-08-09
 type: technical
 tags:
@@ -12,64 +12,72 @@ tags:
 cardImage: /images/blog/voxel-engine-part-2/chunkWater.png
 ---
 
-It's been almost a month I havn't spoken about my voxel engine and it's time for an update.
+It's been almost a month since my last post about the voxel engine, so it's time for an update.
 
-I temporarily dropped compute shaders because I have to few opportunities to work with directX 11 hardware to be effective, anyway it's still necessary to have CPU fallbacks for old hardware.
+I've put compute shaders aside for now: I rarely get to work on DirectX 11 hardware, which makes it hard to make real progress. In any case, the engine still needs CPU fallbacks for older hardware.
 
-## Chunk Management
+## Chunk management
 
-Most of the work was for chunk management, now chunks form a network where each chunk has references on each 6 surrounding chunks, moreover they now have 5 states:
+Most of the work went into chunk management. Chunks now form a network in which each chunk holds references to its six neighbors, and each chunk goes through five states:
 
-- **Initialised**: when the ChunkManager class a chunk to the network, depending of the player's position, this state is defined after the initialisation. the init function lookup for it's 6 adjacents chunks (this lookup offers great optimization perspectives), then for each found chunk the liaison is created for both chunks. in this process, if one of the found chunk has it's links, it is added to tue list of chunk waiting for the voxel generation.
+- **`Initialised`**: the `ChunkManager` adds chunks to the network based on the player's position, and this state is set once a chunk is initialized. The init function looks up the six adjacent chunks (this lookup leaves a lot of room for optimization) and creates a two-way link with each one it finds. During this process, any neighbor that now has all six of its links is added to the queue of chunks waiting for voxel generation.
 
-- **VoxelGenerated:** The ChunkManager trigger the voxel generation for every waiting chunk each frame. This state is defined once the voxels are generated. Then the chunk check if any of its linked chunk or himself is now ready for the next phase (every link need to have it's own voxels generated), if that's the case, this chunk is added to the list of chunks waiting for lightning. When serialisation is done, a loading function will replace the generation function for existing chunks, so the player find back its modifications when he retraces its steps.
+- **`VoxelGenerated`**: every frame, the `ChunkManager` starts voxel generation for the waiting chunks, and this state is set once a chunk's voxels exist. The chunk then checks whether it, or any of its neighbors, is ready for the next phase, which requires every linked chunk to have its voxels too. If so, that chunk joins the queue for lighting. Once serialization is in place, a loading function will replace generation for chunks that already exist, so players find their changes intact when they come back.
 
-- **LightningGenerated:** In the same way, ambient lightning will be calculated in this pass, see "lightning" section bellow. For now it imediatly switch to the next state and added to the list of chunks waiting for mesh. see "mesh" section bellow
+- **`LightningGenerated`**: in the same way, this pass will compute ambient lighting (see *Ambient lighting* below). For now, chunks move straight to the next state and join the queue for meshing (see *Isosurface extraction* below).
 
-- **MeshGenerated:** Once the voxels are ready, it's time to build the geometry. This state is applied once the mesh, the collider and the link with Unity are done. at this step the chunk is visible by the player.
+- **`MeshGenerated`**: once the voxels are ready, it's time to build the geometry. This state is set once the mesh and the collider are built and handed over to Unity. From this point the player can see the chunk.
 
-- **Disposed:** A somewhat apart state, when a chunk is out of range, it join this state, it's array of voxel join the pool, the mesh is destroyed and the chunk join the pool of chunks, waiting to be recycled for another part of the map.
+- **`Disposed`**: a slightly special state. When a chunk goes out of range, its voxel array returns to a pool, its mesh is destroyed, and the chunk itself goes into a chunk pool, ready to be recycled for another part of the map.
 
-Array of voxels and chunks are separate because a chunk release it's array if it's empty after the generation part if it's empty, but it still exist as chunk for the network purpose, and if a player try to add a voxel on an empty chunk (build a tower for example), then an empty array is recovered on the fly. This save a lot of space.
+Voxel arrays and chunks are kept separate because a chunk that turns out to be empty after generation releases its array. It still exists as a chunk, since the network needs it, and if the player places a voxel in an empty chunk (to build a tower, for example), an empty array is taken from the pool on the fly. This saves a lot of memory, since a large part of the world, the whole sky in particular, is made of empty chunks.
 
-This management is multi-thread, only the "link with unity", after a mesh is built is done from the main thread. Make sure everything work without exploding was long and tedious, mostly because it took me a lot of time to discover that unity silently ignore exceptions thrown from threads.
+Chunk management is multithreaded; only the handover to Unity after a mesh is built runs on the main thread. Making all of this work without anything blowing up was long and tedious, mostly because it took me a long time to discover that Unity silently ignores exceptions thrown from other threads.
 
-Most of the passes need that the precedent pass to be done for every adjacent chunk, so each pass reduce the view range, for now the strict minimum is implemented, but it limit a lot the possibilities to add more, for example I would like to generated the voxels in multiple pass, but I strongly hesitate to do it.
+Most passes need the previous pass to be finished for every adjacent chunk. As a result, each pass shrinks the view range: a chunk at the edge of the loaded area can never get further than its least advanced neighbor, so every pass that depends on neighbors loses one ring of chunks. For now I've implemented the strict minimum, but this severely limits adding new passes. For example, I'd like to generate voxels in several passes, but I'm very reluctant to do it.
 
-## Ambient lightning
+## Ambient lighting
 
-This part is being designed. It's a complex subject because of the infinite height/depth, the algorithm used in most voxel engines need a fix height, it's main idea is to start sun light from the top of the chunk, to stop it at the first block found, then diffuse it in the 4 horizontal directions. Which obviously don't work for an infinite height.
+This part is still being designed. It's a hard problem because the world has infinite height and depth. The algorithm most voxel engines use requires a fixed height: sunlight starts at the top of the chunk column, stops at the first solid block, and then spreads in the four horizontal directions. That obviously doesn't work when there is no top.
 
-I got in touch with the block story maker, [who has himself faced this problem](http://www.youtube.com/watch?v=7UPPsALgNCE), he define at the generation time, lit air blocks and dark air blocks, the output is excellent but there is still artefacts, that I consider pretty annoying (even if apparently only few of its players noticed): if you build a close room at the surface, it's still lit inside, now if you fil it and dig again, now it's dark. The idea I got to enhance this is to simply update the air blocks under a modified block. This solve some problems, but brings several others: the depth is theorically infinite so update the blocks on an undefined distance could also be infinite, and some air blocks that should be modified could even not be loaded. These are not insoluble problems, but there will still be artefacts, but invisble for a "normal" usage, I guess.
+I got in touch with the developer of Block Story, [who faced the same problem](http://www.youtube.com/watch?v=7UPPsALgNCE). His solution is to mark air blocks as lit or dark at generation time. The result is excellent, but it leaves artifacts that I find quite annoying (even if apparently few of his players notice them): if you build a closed room at the surface, it stays lit inside, whereas if you fill a space and dig it out again, it becomes dark. My idea to improve on this is to update the air blocks below a block whenever it is modified. That solves some problems but creates others: since depth is theoretically infinite, the update could have to run over an unbounded distance, and some of the air blocks that should change may not even be loaded. These problems are not unsolvable, and there will still be artifacts, but I expect them to be invisible in normal play.
 
 ## Isosurface extraction
 
-First, let's talk about the extraction methods I wanted to test:
+First, the extraction methods I wanted to test:
 
-[**Adaptive skeleton climbing**](http://www.cse.cuhk.edu.hk/~ttwong/papers/asc/asc.html): This one interested me for the LOD possibilities, but it don't allow to easily transit between LOD's (actually like most of the algorithms) but more importantly it don't allow to edit the voxels nor to add chunks easily without rebuilding the entire terrain, which is unacceptable.
+[**Adaptive skeleton climbing**](http://www.cse.cuhk.edu.hk/~ttwong/papers/asc/asc.html): I was interested in its LOD capabilities, but it doesn't make transitions between LODs easy (like most algorithms, to be fair). More importantly, it doesn't allow editing voxels or adding chunks without rebuilding the entire terrain, which is a dealbreaker.
 
-[**Dual contouring**](http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf): This method is theoretically completely usable, but I couldn't approach acceptable performance yet, having put aside compute shader. As far as I know, the only one in the world that made it is Miguel Cepero, by using openCL (by the way, he just licensed its engine to Sony for everquest next, [annonced earlier this week](https://www.youtube.com/watch?v=cdgPuEl5Nuk)).
+[**Dual contouring**](http://www.frankpetterson.com/publications/dualcontour/dualcontour.pdf): in theory this method is entirely usable, but without compute shaders I haven't come close to acceptable performance. As far as I know, the only person who has managed it is Miguel Cepero, using OpenCL (he has just licensed his engine to Sony for EverQuest Next, [announced earlier this week](https://www.youtube.com/watch?v=cdgPuEl5Nuk)).
 
-Like I said in the previous article about the HLSL noise library, I'll make a voxel engine based on multiple shape (cube, "triangle", etc). For now, I am facing a relatively stupid design problem, yet blocking, each shape need it's own generation function for each possible orientation, which mean I'll need to almost duplicate this generation function hundreds times, so I'm looking for a cleaner way, which would keep maintainability of the code.
+As I mentioned in my article about the HLSL noise library, I'm going to build the voxel engine around multiple block shapes (cube, "triangle", and so on). Right now I'm stuck on a design problem that is fairly silly but still blocking: each shape needs its own generation function for every possible orientation, which means duplicating almost the same function hundreds of times. I'm looking for a cleaner approach that keeps the code maintainable.
 
-## Submesh et transparent voxel
+## Submeshes and transparent voxels
 
-![chunkWater](/images/blog/voxel-engine-part-2/chunkWater.png)
+![A generated chunk with transparent water voxels](/images/blog/voxel-engine-part-2/chunkWater.png)
 
-Finally a screenshoot! I integrated transparent voxels and multiple shaders usage to render chunks, here is the result, it's also an opportunity to see the improvement I made on the terrain functions with [Fractional Brownian motion](http://en.wikipedia.org/wiki/Fractional_Brownian_motion). I also made mipmap available for DX10+ graphics card, this solve the texture flickering problem existing in the POC.
+Finally, a screenshot! I added transparent voxels and support for multiple shaders when rendering a chunk, each material getting its own submesh. Here is the result. It also shows the improved terrain functions, now based on [fractional Brownian motion](http://en.wikipedia.org/wiki/Fractional_Brownian_motion), which sums several octaves of noise at increasing frequencies and decreasing amplitudes to add detail at every scale. I also enabled mipmapping on DX10+ graphics cards, which fixes the texture flickering visible in the proof of concept.
 
-![voxelEngine](/images/blog/voxel-engine-part-2/voxelEngine.png)
+![Voxel terrain with the improved generation functions](/images/blog/voxel-engine-part-2/voxelEngine.png)
 
-## Mesh Collider optimization
+## Mesh collider optimization
 
-Finally, I optimized mesh collider, as seen in this screenshoot (I added a block in the second to illustrate the modification that happen when the terrain is edited):
+Last, I optimized the mesh collider, as you can see in this screenshot (I added a block in the second view to show how the collider changes when the terrain is edited):
 
-![chunkCollider](/images/blog/voxel-engine-part-2/chunkCollider-1024x460.png)
+![Optimized chunk collider made of large quads, before and after adding a block](/images/blog/voxel-engine-part-2/chunkCollider-1024x460.png)
 
-For now it's not applied to the rendering mesh (blue mesh), I need to wait for lightning , since it need to keep some vertices, for the light gradient to be correct, I don't know if it will be a necessary optimization.
+For now, this optimization isn't applied to the rendering mesh (shown in blue). I'm waiting until lighting is done, because lighting is stored per vertex and the rendering mesh has to keep some intermediate vertices for the light gradients to look right. I'm not sure this optimization will even be necessary there.
 
-I did not found any information about doing this optimization, while it's mentioned everywhere, but that's actually relatively straightforward, instead of generating the geometry per block, it's generted per face, a bool array tell if a block face as been generated, one just need to iterate along a direction until a bloc already generated or don't need do be, then try the other direction with the defined length until a block already generated or don't need to be, the length from the first direction, the length from the second and the starting point define a rectangle, which you generate, without forgetting to mark each voxels as generated, then continue to iterate on the voxel array to find another voxel that need to be generated and not yet done. This pattern is reproduced until the end of the array is found by the main iteration, then this is done for each face. It's short, but (hopefully) concise.
+I couldn't find any explanation of how to do this, even though it's mentioned everywhere, but it's fairly straightforward. Instead of generating geometry block by block, you generate it face by face, using a boolean array to track which block faces are already covered:
 
-While writing this article, I realized that it wouldn't be a problem if some part of the quad collider where overlapping or inside the geometry, for example, when I added the bloc on the screen, we could just add a quad on the top without modifing the rest of the collider, I'll look into it.
+1. Iterate over the voxel array until you find a face that needs to be generated and isn't covered yet.
+2. From that voxel, extend along a first direction until you reach a face that is already covered or doesn't need to be generated.
+3. Then extend along the second direction, row by row, as long as each full row of that length can be covered.
+4. The starting point and the two lengths define a rectangle. Generate it as a single quad and mark every face it covers.
+5. Resume the main iteration until you reach the end of the array.
 
-For now this is only done for the top face, here again I'm looking for a way to avoid to duplicate this code, especially because this algorithm should evolve a lot when with the integration of new shapes.
+Repeat this for each of the six face directions. It's short, but hopefully clear.
+
+While writing this article, I realized it wouldn't matter if some collider quads overlapped or sat inside the geometry. For example, when I added the block in the screenshot, I could have simply added a quad on top of it without touching the rest of the collider. I'll look into it.
+
+For now this only works for top faces. Here again, I'm looking for a way to avoid duplicating the code, especially since the algorithm will have to change a lot once new shapes are added.

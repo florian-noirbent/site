@@ -1,6 +1,6 @@
 ---
-title: "Solar system"
-description: "Here is a first school project, I made in this begening of this school year. Nothing awesome yet, but it helped to get back to openGL and C++, I didn't used directly openGL since…"
+title: "Solar System in OpenGL"
+description: "My first computer graphics project of the year: a small solar system in C++ and OpenGL, with a custom .obj and .bmp importer, vertex arrays, lighting and textures."
 date: 2013-10-04
 type: devlog
 tags:
@@ -10,26 +10,20 @@ tags:
   - "Student"
 ---
 
-Here is a first school project, I made in this begening of this school year. Nothing awesome yet, but it helped to get back to openGL and C++, I didn't used directly openGL since my bomberman 2 years ago, and did not use C++ for a while because I mainly worked with XNA and Unity last year.
+Here is my first school project of this year. Nothing spectacular yet, but it was a good way to get back into OpenGL and C++. I hadn't used OpenGL directly since my Bomberman two years ago, and I hadn't written C++ in a while, since I mostly worked with XNA and Unity last year.
 
 <iframe src="https://www.youtube-nocookie.com/embed/DhoJWJnjkhQ" title="YouTube video" loading="lazy" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-[also on youku](http://v.youku.com/v_show/id_XNjE2OTg0OTA4.html)
+[Also on Youku](http://v.youku.com/v_show/id_XNjE2OTg0OTA4.html)
 
-The subject was just to draw an object in *immediate mode,* and move it with glTranslate() and also use the matrix stack.
+The assignment was simply to draw an object in *immediate mode* (sending vertices one by one between `glBegin` and `glEnd`), move it with `glTranslate()`, and use the matrix stack (`glPushMatrix` and `glPopMatrix`), which lets a child object inherit its parent's transform, the natural way to make one body orbit another that is itself moving.
 
-I added:
+I went further and added:
 
-- a .obj model importer.
+- a `.obj` model importer
+- a `.bmp` image importer
+- vertex arrays, which send whole meshes at once instead of one vertex per call
+- fixed-pipeline lighting
+- textures
 
-- a .bmp image importer.
-
-- usage of vertex array.
-
-- usage of the fixed pipeline lighting.
-
-- usage of textures.
-
-The importer only handle triangles yet and don't duplicate vertices on UV seams if the modeling application don't do it, so there is a probem on the joint, mainly visible on the background. I don't know yet if I'll need to complete it or if I'll be allowed to use a library in the future.
-
-sources are here
+The importer only handles triangles for now. It also doesn't duplicate vertices along UV seams when the modeling software hasn't done it: a vertex on a seam needs two different texture coordinates, one for each side, so without duplication the texture is stretched along the joint. This is mostly visible on the background. I don't know yet whether I'll need to finish the importer or whether we'll be allowed to use a library in later projects.
