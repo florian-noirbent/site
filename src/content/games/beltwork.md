@@ -1,7 +1,7 @@
 ---
 title: "Beltwork"
 description: "Cozy, idle-friendly automation and trade game in the asteroid belt. Mine asteroids, run your station's factories, and trade in a shared player economy at your own pace."
-cardImage: /images/games/beltwork-placeholder.svg
+cardImage: /images/games/beltwork/cover.webp
 date: 2026-02-13
 status: unreleased
 platforms:

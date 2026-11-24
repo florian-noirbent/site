@@ -9,9 +9,12 @@ tags:
   - "React"
   - "Node.js"
   - "Architecture"
+cardImage: /images/games/beltwork/cover.webp
 ---
 
 [Beltwork](/games/beltwork) is a browser game I have been building since mid-February: you run a small industrial station in the asteroid belt, send mining rigs to asteroids, refine what they bring back and, eventually, trade it on a market shared by every player. It is also, quite openly, a training project. I have spent my career in Unity and C#, and I wanted a real reason to learn the modern web stack end to end: TypeScript everywhere, React and Vite on the front, Node and Fastify on the back, PostgreSQL with Drizzle in between. The source is on GitHub: [florian-noirbent/beltwork](https://github.com/florian-noirbent/beltwork).
+
+![Beltwork key art: an asteroid-belt station with mining rigs at work, a market panel trading with Mars and the Moon, a production chain from ore to parts, and an operator watching over it with her robot](/images/games/beltwork/cover.webp)
 
 ## The inspiration: OGame, minus the war
 
