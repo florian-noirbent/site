@@ -49,3 +49,5 @@ The seed, `simplexSeed`, must be initialized before any call.
 I'll extend the library as my needs grow and update this article when I do. Likely additions are a version that tiles over a given interval, and a 4D version for clouds, where the fourth dimension can be used as time to animate a 3D volume.
 
 [**Source (temporary)**](http://pastebin.com/BycaHKEP)
+
+*The library is included in the archived voxel terrain project on [GitHub](https://github.com/florian-noirbent/voxelTerrain) (`Assets/simplex cs/simplex.hlsl`).*

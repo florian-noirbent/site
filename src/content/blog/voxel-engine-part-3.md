@@ -48,3 +48,5 @@ My experiments here gave fairly average results. I tried decomposing my cubes in
 In the end, I think I'll define each shape once in a canonical position, then place it with a matrix (rotation and translation). This also solves the code duplication problem from [part 2](/blog/voxel-engine-part-2), since one generation function per shape covers every orientation. I originally set this option aside because it looked too heavy for an entire terrain, but with the new direction I've chosen for this engine, it should be perfect.
 
 I gave up on dual contouring earlier, following the Blockscape developers' example. In their latest articles, however, they explain that they reworked their engine to use dual contouring and got a huge performance boost, on top of the obvious gain in quality. That made me question the path I've chosen. Maybe I should follow suit and give it a second try, but I don't have time for it right now.
+
+*The source code of this engine is archived on [GitHub](https://github.com/florian-noirbent/voxelTerrain).*

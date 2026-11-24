@@ -53,3 +53,5 @@ Once I've settled on the method for the framework, I'll implement it with comput
 On a different front, I'd like to study terrain generation: try different types of noise and combine them to get a realistic terrain that is still cheap enough to generate in real time on the GPU. That is almost a project of its own, and the small glimpse I've had of it showed me how deep the subject is.
 
 The most urgent task, though, is to rework the chunk data structure. The seams you can see when editing the terrain in marching cubes mode exist because a chunk can't quickly access its neighbors, and marching cubes needs the neighboring voxels to build a continuous surface across chunk borders.
+
+*The source code of a later version of this engine is archived on [GitHub](https://github.com/florian-noirbent/voxelTerrain), along with the original Web Player build.*

@@ -81,3 +81,5 @@ Repeat this for each of the six face directions. It's short, but hopefully clear
 While writing this article, I realized it wouldn't matter if some collider quads overlapped or sat inside the geometry. For example, when I added the block in the screenshot, I could have simply added a quad on top of it without touching the rest of the collider. I'll look into it.
 
 For now this only works for top faces. Here again, I'm looking for a way to avoid duplicating the code, especially since the algorithm will have to change a lot once new shapes are added.
+
+*The source code of this engine is archived on [GitHub](https://github.com/florian-noirbent/voxelTerrain).*

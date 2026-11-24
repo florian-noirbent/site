@@ -1,6 +1,6 @@
 ---
 import Tag from "./Tag.astro";
-import { postTypeLabel, postUrl, type Post } from "../lib/blog";
+import { postCardImage, postTypeLabel, postUrl, type Post } from "../lib/blog";
 import { formatDate, isoDate } from "../lib/format";
 
 interface Props {
@@ -8,7 +8,8 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const { title, description, date, tags, cardImage, cardFit } = post.data;
+const { title, description, date, tags } = post.data;
+const card = postCardImage(post);
 ---
 
 <a
@@ -16,19 +17,15 @@ const { title, description, date, tags, cardImage, cardFit } = post.data;
   class="surface group block h-full transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-md dark:hover:border-cyan-700"
 >
   <article class="flex h-full flex-col gap-4">
-    {
-      cardImage && (
-        <img
-          src={cardImage}
-          alt=""
-          class:list={[
-            "h-44 w-full rounded-xl border border-slate-200 dark:border-slate-700",
-            cardFit === "contain" ? "bg-white object-contain p-1" : "object-cover"
-          ]}
-          loading="lazy"
-        />
-      )
-    }
+    <img
+      src={card.src}
+      alt=""
+      class:list={[
+        "h-44 w-full rounded-xl border border-slate-200 dark:border-slate-700",
+        card.fit === "contain" ? "bg-white object-contain p-1" : "object-cover"
+      ]}
+      loading="lazy"
+    />
 
     <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-wide">
       <span class="text-cyan-700 dark:text-cyan-300">{postTypeLabel(post)}</span>

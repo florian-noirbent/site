@@ -25,6 +25,11 @@ draft: false             # optional: true hides the post
 ---
 ```
 
+When `cardImage` is omitted, the card (and the social preview) falls back to
+the thumbnail of the post's first YouTube video, then to its first image hosted on the site, then
+to the default card set in `BLOG_CARD` (`src/config/site.ts`). The
+"Image not recovered" placeholder is never used as a card.
+
 Posts are sorted newest first. The home page shows the latest
 `HOME.recentPostCount` posts. The blog index filters by tag, type and date range
 on the client, and keeps the filters in the URL (`/blog?tag=claim-earth`).

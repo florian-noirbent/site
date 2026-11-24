@@ -40,6 +40,14 @@ export const BLOG_TYPES = {
 export type BlogType = keyof typeof BLOG_TYPES;
 export const BLOG_TYPE_KEYS = Object.keys(BLOG_TYPES) as [BlogType, ...BlogType[]];
 
+/** Card images: used when a post has no explicit `cardImage` (see `postCardImage`). */
+export const BLOG_CARD = {
+  defaultImage: "/images/blog/default-card.svg",
+  /** Placeholder shown in articles for lost images; never used as a card. */
+  missingImage: "/images/blog/missing-image.svg",
+  youtubeThumbnail: (videoId: string) => `https://i.ytimg.com/vi/${videoId}/hqdefault.jpg`
+} as const;
+
 /** Query parameters understood by the blog index filters. */
 export const BLOG_FILTER_PARAMS = {
   tag: "tag",
