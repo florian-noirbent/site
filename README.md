@@ -27,7 +27,7 @@ npm run preview
 ## Notes
 
 - Site URL is configured as `https://titan.nofl.uk`.
-- Dark mode is class-based and persisted in `localStorage`.
+- Theme: System (default, follows the OS/browser setting live), Light or Dark, chosen in the header. Only an explicit Light/Dark choice is stored in `localStorage` (see `THEME` in `src/config/site.ts`); dark mode is class-based.
 - No tracking or analytics are enabled by default.
 - Game placeholder generation workflow is documented in `docs/game-placeholders.md`.
 - Blog posts, game links and game page groups are documented in `docs/blog-and-game-links.md`.

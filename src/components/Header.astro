@@ -1,5 +1,5 @@
 ---
-import { NAV_LINKS } from "../config/site";
+import { NAV_LINKS, THEME } from "../config/site";
 
 interface Props {
   currentPath: string;
@@ -45,37 +45,24 @@ const isActive = (href: string) =>
         </ul>
       </nav>
 
-      <button
-        id="theme-toggle"
-        type="button"
-        class="rounded-lg border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-cyan-500 dark:hover:text-cyan-300"
-        aria-label="Toggle dark mode"
+      <label for="theme-select" class="sr-only">Color theme</label>
+      <select
+        id="theme-select"
+        class="rounded-lg border border-slate-300 bg-transparent px-2.5 py-2 text-sm font-medium text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-cyan-500 dark:hover:text-cyan-300"
       >
-        Theme
-      </button>
+        {THEME.options.map((option) => <option value={option.value}>{option.label}</option>)}
+      </select>
     </div>
   </div>
 </header>
 
 <script is:inline>
   (() => {
-    const button = document.getElementById("theme-toggle");
-    if (!button) return;
-
-    const applyLabel = () => {
-      const dark = document.documentElement.classList.contains("dark");
-      button.textContent = dark ? "Light" : "Dark";
-      button.setAttribute("aria-pressed", dark ? "true" : "false");
-    };
-
-    applyLabel();
-
-    button.addEventListener("click", () => {
-      const dark = document.documentElement.classList.toggle("dark");
-      try {
-        localStorage.setItem("theme", dark ? "dark" : "light");
-      } catch {}
-      applyLabel();
-    });
+    const select = document.getElementById("theme-select");
+    if (!select || !window.siteTheme) return;
+    select.value = window.siteTheme.get();
+    select.addEventListener("change", () => window.siteTheme.set(select.value));
+    // Keep the selector in sync when another tab changes the theme.
+    window.addEventListener("themechange", (event) => (select.value = event.detail));
   })();
 </script>

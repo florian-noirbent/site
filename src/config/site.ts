@@ -19,6 +19,19 @@ export const NAV_LINKS = [
   { href: "/contact", label: "Contact" }
 ] as const;
 
+/**
+ * Color theme. "system" follows the OS/browser setting live and is the default
+ * (nothing stored); "light" and "dark" are stored under `storageKey`.
+ */
+export const THEME = {
+  storageKey: "theme",
+  options: [
+    { value: "system", label: "System" },
+    { value: "light", label: "Light" },
+    { value: "dark", label: "Dark" }
+  ]
+} as const;
+
 export const ROUTES = {
   games: "/games",
   blog: "/blog",

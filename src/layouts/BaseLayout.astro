@@ -2,6 +2,7 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
+import { THEME } from "../config/site";
 
 interface Props {
   title?: string;
@@ -45,17 +46,48 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://titan.nofl.
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(image, Astro.site ?? "https://titan.nofl.uk").toString()} />
 
-    <script is:inline>
+    <script is:inline define:vars={{ themeKey: THEME.storageKey }}>
+      // Applies the theme before the first paint. "system" (the default, nothing
+      // stored) follows prefers-color-scheme live; "light"/"dark" are explicit.
       (() => {
-        try {
-          const stored = localStorage.getItem("theme");
-          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          const isDark = stored ? stored === "dark" : prefersDark;
-          document.documentElement.classList.toggle("dark", isDark);
-        } catch {
-          const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-          document.documentElement.classList.toggle("dark", prefersDark);
-        }
+        const media = window.matchMedia("(prefers-color-scheme: dark)");
+        const read = () => {
+          try {
+            const value = localStorage.getItem(themeKey);
+            return value === "light" || value === "dark" ? value : "system";
+          } catch {
+            return "system";
+          }
+        };
+        const apply = (preference = read()) => {
+          const dark = preference === "dark" || (preference === "system" && media.matches);
+          const root = document.documentElement;
+          root.classList.toggle("dark", dark);
+          root.style.colorScheme = dark ? "dark" : "light";
+          root.dataset.theme = preference;
+          window.dispatchEvent(new CustomEvent("themechange", { detail: preference }));
+        };
+        const set = (preference) => {
+          try {
+            if (preference === "system") localStorage.removeItem(themeKey);
+            else localStorage.setItem(themeKey, preference);
+          } catch {}
+          apply(preference);
+        };
+        apply();
+        const refresh = () => apply();
+        // Follow the OS setting live (addListener for older Safari), and re-check
+        // when the tab comes back in case a change event was missed.
+        if (media.addEventListener) media.addEventListener("change", refresh);
+        else media.addListener(refresh);
+        window.addEventListener("focus", refresh);
+        document.addEventListener("visibilitychange", () => {
+          if (document.visibilityState === "visible") refresh();
+        });
+        window.addEventListener("storage", (event) => {
+          if (event.key === themeKey || event.key === null) apply();
+        });
+        window.siteTheme = { get: read, set };
       })();
     </script>
 
