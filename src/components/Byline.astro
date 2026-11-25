@@ -1,0 +1,20 @@
+---
+import { ROUTES, SITE } from "../config/site";
+
+/** "by Titan" with the mecha avatar: the handle players know, linking to the person behind it. */
+---
+
+<a
+  href={ROUTES.about}
+  class="inline-flex items-center gap-2 text-sm font-semibold text-slate-700 hover:text-cyan-700 dark:text-slate-300 dark:hover:text-cyan-300"
+  title={`${SITE.handle} is ${SITE.name}`}
+>
+  <img
+    src={SITE.handleAvatar}
+    alt=""
+    width="24"
+    height="24"
+    class="h-6 w-6 rounded-full border border-slate-200 dark:border-slate-700"
+  />
+  <span>by {SITE.handle}</span>
+</a>

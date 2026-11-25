@@ -2,7 +2,7 @@
 import Header from "../components/Header.astro";
 import Footer from "../components/Footer.astro";
 import "../styles/global.css";
-import { THEME } from "../config/site";
+import { SITE, THEME } from "../config/site";
 
 interface Props {
   title?: string;
@@ -10,17 +10,20 @@ interface Props {
   image?: string;
   noindex?: boolean;
   ogType?: "website" | "article";
+  /** Who the page speaks as: "handle" for the pages players share (games, blog, art). */
+  persona?: "name" | "handle";
 }
 
 const {
-  title = "Titan - game developer",
-  description = "Titan builds real-time destruction systems and gameplay tooling focused on runtime geometry, performance, and reliable content workflows.",
-  image = "/images/window-fracture-cover.png",
+  persona = "name",
+  title = `${SITE.fullName} - game developer`,
+  description = "Florian Noirbent builds real-time destruction systems and gameplay tooling focused on runtime geometry, performance, and reliable content workflows.",
+  image = persona === "handle" ? SITE.handleArtwork : SITE.portrait,
   noindex = false,
   ogType = "website"
 } = Astro.props;
 
-const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://titan.nofl.uk").toString();
+const canonical = new URL(Astro.url.pathname, Astro.site ?? SITE.url).toString();
 ---
 
 <!doctype html>
@@ -35,16 +38,16 @@ const canonical = new URL(Astro.url.pathname, Astro.site ?? "https://titan.nofl.
     {noindex && <meta name="robots" content="noindex, nofollow" />}
 
     <meta property="og:type" content={ogType} />
-    <meta property="og:site_name" content="Titan" />
+    <meta property="og:site_name" content={SITE.fullName} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta property="og:image" content={new URL(image, Astro.site ?? "https://titan.nofl.uk").toString()} />
+    <meta property="og:image" content={new URL(image, Astro.site ?? SITE.url).toString()} />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(image, Astro.site ?? "https://titan.nofl.uk").toString()} />
+    <meta name="twitter:image" content={new URL(image, Astro.site ?? SITE.url).toString()} />
 
     <script is:inline define:vars={{ themeKey: THEME.storageKey }}>
       // Applies the theme before the first paint. "system" (the default, nothing

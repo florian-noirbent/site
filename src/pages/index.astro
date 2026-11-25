@@ -1,70 +1,165 @@
 ---
 import { getCollection } from "astro:content";
 import BaseLayout from "../layouts/BaseLayout.astro";
-import CardGrid from "../components/CardGrid.astro";
 import GameGrid from "../components/GameGrid.astro";
 import PostGrid from "../components/PostGrid.astro";
-import ProjectCard from "../components/ProjectCard.astro";
 import SectionHeading from "../components/SectionHeading.astro";
-import { getFeaturedGames } from "../lib/games";
-import { getRecentPosts } from "../lib/blog";
-import { byDateDesc } from "../lib/format";
-import { HOME, ROUTES } from "../config/site";
+import StatusBadge from "../components/StatusBadge.astro";
+import Tag from "../components/Tag.astro";
+import { gameUrl, getFeaturedGames, getGames } from "../lib/games";
+import { getPosts, getPostsForGame, postUrl } from "../lib/blog";
+import { byDateDesc, formatMonthYear } from "../lib/format";
+import { CONTACT_LINKS, HOME, ROUTES, SITE } from "../config/site";
 
+const games = await getGames();
+const posts = await getPosts();
 const featuredAssets = (await getCollection("assets")).filter((asset) => asset.data.featured).sort(byDateDesc);
-const featuredGames = await getFeaturedGames();
-const recentPosts = await getRecentPosts(HOME.recentPostCount);
+
+// Hero: the most recent featured game, with its technical write-up when there is one.
+const [hero] = await getFeaturedGames();
+const heroPosts = hero ? await getPostsForGame(hero) : [];
+const heroArticle = heroPosts.find((post) => post.data.type === "technical") ?? heroPosts[0];
+
+const moreGames = HOME.moreGames
+  .map((slug) => games.find((game) => game.slug === slug))
+  .filter((game) => game !== undefined && game !== hero);
+
+const proofGame = games.find((game) => game.slug === HOME.proofGame);
+const firstPostYear = posts.at(-1)?.data.date.getFullYear();
+const proof = [
+  { value: String(games.length), label: "games shipped or prototyped", href: ROUTES.games },
+  ...(proofGame
+    ? [{ value: "#1", label: `on the French App Store with ${proofGame.data.title}`, href: gameUrl(proofGame) }]
+    : []),
+  { value: String(posts.length), label: `articles and devlogs since ${firstPostYear}`, href: ROUTES.blog }
+];
+
+const introLinks = CONTACT_LINKS.filter((link) => link.intro);
 ---
 
-<BaseLayout title="Titan" description="Home of Titan's portfolio: featured games, articles and assets.">
-  <section class="grid gap-6 lg:grid-cols-[1.35fr_0.65fr] lg:items-stretch">
-    <div class="surface flex h-full flex-col justify-center">
-      <h1 class="text-4xl font-bold">
-        Real-time Systems & Technical Game Development
-      </h1>
-
-      <p class="mt-4 max-w-2xl text-slate-700 dark:text-slate-300">
-        I build gameplay systems, rendering pipelines, and procedural tools -
-        from production backend systems to real-time VFX and physics-driven mechanics.
-      </p>
-
-      <div class="mt-8 flex flex-wrap gap-3">
-        <a class="button-primary" href="/assets">View Assets</a>
-        <a class="button-secondary" href="/contact">Contact</a>
-      </div>
-    </div>
-
-    <aside class="surface p-2">
-      <img
-        src="/images/mecha-signature.jpg"
-        alt="Titan signature mecha artwork"
-        class="h-full min-h-[280px] w-full rounded-xl border border-slate-200 object-cover dark:border-slate-700"
-        loading="lazy"
-      />
-    </aside>
+<BaseLayout description="Florian Noirbent, also known as Titan: experiments, prototypes, games and Unity assets built around procedural generation, simulation and emergent behavior.">
+  <section class="max-w-3xl">
+    <h1 class="sr-only">{SITE.fullName}, game developer</h1>
+    <p class="text-xl text-slate-800 dark:text-slate-200">
+      Senior software engineer by day, making games and assets since 2010, solo and as co-founder of SupremApp. Focused on procedural content, simulation and emergent gameplay that surprises me.
+      <a class="font-semibold text-cyan-700 hover:underline dark:text-cyan-300" href={ROUTES.about}>More about me</a>
+    </p>
+    <ul class="mt-5 flex flex-wrap gap-2">
+      {
+        introLinks.map((link) => (
+          <li>
+            <a
+              class="button-secondary px-3 py-1.5 text-sm"
+              href={link.href}
+              {...(link.href.startsWith("mailto:") ? {} : { target: "_blank", rel: "noreferrer noopener" })}
+            >
+              {link.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </section>
 
-  <div class="mt-12 space-y-12">
-    <PostGrid title="Recent Articles" posts={recentPosts} link={{ href: ROUTES.blog, label: "See all articles" }} />
+  {
+    hero && (
+      <section class="card mt-10 grid lg:grid-cols-[1.5fr_1fr]" aria-labelledby="hero-title">
+        <a href={gameUrl(hero)} class="flex items-center bg-white" tabindex="-1" aria-hidden="true">
+          <img
+            src={hero.data.cardImage}
+            alt=""
+            class="aspect-video w-full object-contain"
+            fetchpriority="high"
+          />
+        </a>
 
-    <GameGrid title="Featured Games" games={featuredGames} link={{ href: ROUTES.games, label: "See all games" }} />
+        <div class="flex flex-col justify-center gap-4 border-t border-slate-200/80 p-6 sm:p-8 lg:border-l lg:border-t-0 dark:border-slate-800">
+          <div class="flex flex-wrap items-center gap-3">
+            <p class="eyebrow">Latest game · {formatMonthYear(hero.data.date)}</p>
+            <StatusBadge status={hero.data.status} />
+          </div>
+
+          <h2 id="hero-title" class="text-3xl font-extrabold">
+            <a class="hover:text-cyan-700 dark:hover:text-cyan-300" href={gameUrl(hero)}>{hero.data.title}</a>
+          </h2>
+
+          <p class="text-slate-700 dark:text-slate-300">{hero.data.description}</p>
+
+          <p class="text-sm font-medium text-slate-500 dark:text-slate-400">
+            {[hero.data.genre, hero.data.engine, hero.data.platforms.join(", ")].join(" · ")}
+          </p>
+
+          <div class="mt-2 flex flex-wrap gap-3">
+            {
+              hero.data.links.play ? (
+                <a class="button-primary" href={hero.data.links.play} target="_blank" rel="noreferrer noopener">
+                  Play in browser
+                </a>
+              ) : (
+                <a class="button-primary" href={gameUrl(hero)}>View game</a>
+              )
+            }
+            {heroArticle && <a class="button-secondary" href={postUrl(heroArticle)}>How it works</a>}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <ul class="mt-6 grid gap-4 sm:grid-cols-3">
+    {
+      proof.map((item) => (
+        <li>
+          <a
+            href={item.href}
+            class="group flex h-full items-baseline gap-3 rounded-2xl px-4 py-3 transition hover:bg-white/70 dark:hover:bg-slate-900/70"
+          >
+            <span class="text-3xl font-extrabold text-slate-900 dark:text-slate-100">{item.value}</span>
+            <span class="text-sm text-slate-600 group-hover:text-cyan-700 dark:text-slate-400 dark:group-hover:text-cyan-300">
+              {item.label}
+            </span>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+
+  <div class="mt-12 space-y-14">
+    <GameGrid title="More games" games={moreGames} link={{ href: ROUTES.games, label: `See all ${games.length} games` }} />
+
+    <PostGrid
+      title="Recent articles"
+      posts={posts.slice(0, HOME.recentPostCount)}
+      link={{ href: ROUTES.blog, label: "See all articles" }}
+    />
 
     {
       featuredAssets.length > 0 && (
         <section>
-          <SectionHeading title="Featured Assets" link={{ href: ROUTES.assets, label: "See all assets" }} />
-          <CardGrid>
+          <SectionHeading title="Assets" link={{ href: ROUTES.assets, label: "See all assets" }} />
+          <div class="space-y-5">
             {featuredAssets.map((asset) => (
-              <ProjectCard
-                title={asset.data.title}
-                description={asset.data.description}
-                image={asset.data.cardImage}
-                tags={asset.data.tags}
-                href={`${ROUTES.assets}/${asset.slug}`}
-                status={asset.data.status}
-              />
+              <a href={`${ROUTES.assets}/${asset.slug}`} class="card card-link group h-auto sm:flex">
+                {asset.data.cardImage && (
+                  <img
+                    src={asset.data.cardImage}
+                    alt=""
+                    class="h-44 w-full border-b border-slate-200/80 object-cover sm:h-auto sm:w-64 sm:border-b-0 sm:border-r dark:border-slate-800"
+                    loading="lazy"
+                  />
+                )}
+                <div class="flex flex-1 flex-col justify-center gap-3 p-5 sm:p-6">
+                  <h3 class="text-xl font-bold text-slate-900 group-hover:text-cyan-700 dark:text-slate-100 dark:group-hover:text-cyan-300">
+                    {asset.data.title}
+                  </h3>
+                  <p class="max-w-2xl text-sm text-slate-700 dark:text-slate-300">{asset.data.description}</p>
+                  <div class="flex flex-wrap gap-2">
+                    {asset.data.tags.map((tag) => <Tag label={tag} />)}
+                  </div>
+                </div>
+              </a>
             ))}
-          </CardGrid>
+          </div>
         </section>
       )
     }

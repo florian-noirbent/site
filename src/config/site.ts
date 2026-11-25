@@ -3,20 +3,44 @@
  * labels, ordering and limits from here instead of hard-coding them.
  */
 
+/**
+ * Two names, one person. `name` (with the photo) leads on the pages recruiters
+ * and partners read: home, About, assets. `handle` (with the mecha) leads on
+ * the pages players share: games, blog, art. See the `persona` prop of
+ * BaseLayout and the Byline component.
+ */
 export const SITE = {
-  name: "Titan",
-  url: "https://titan.nofl.uk",
+  name: "Florian Noirbent",
+  handle: "Titan",
+  /** Both, for the home title, the footer and search/social site name. */
+  fullName: "Florian Noirbent (Titan)",
+  avatar: "/images/avatar.jpg",
+  portrait: "/images/portrait.jpg",
+  handleAvatar: "/images/titan-avatar.jpg",
+  handleArtwork: "/images/mecha-signature.jpg",
+  url: "https://florian-noirbent.nofl.uk",
   locale: "en-US"
 } as const;
 
+/** Header navigation. The logo links home; contact lives on About and in the footer. */
 export const NAV_LINKS = [
-  { href: "/", label: "Home" },
-  { href: "/assets", label: "Assets" },
   { href: "/games", label: "Games" },
+  { href: "/assets", label: "Assets" },
   { href: "/blog", label: "Blog" },
   { href: "/art", label: "Art" },
-  { href: "/about", label: "About" },
-  { href: "/contact", label: "Contact" }
+  { href: "/about", label: "About" }
+] as const;
+
+/**
+ * Ways to reach me, in display order: all of them on About and in the footer,
+ * those marked `intro` also under the home page introduction.
+ */
+export const CONTACT_LINKS = [
+  { label: "Email", text: "florian.noirbent@gmail.com", href: "mailto:florian.noirbent@gmail.com", intro: true },
+  { label: "GitHub", text: "github.com/florian-noirbent", href: "https://github.com/florian-noirbent", intro: true },
+  { label: "itch.io", text: "titan-koyos.itch.io", href: "https://titan-koyos.itch.io", intro: true },
+  { label: "LinkedIn", text: "linkedin.com/in/florian-noirbent", href: "https://www.linkedin.com/in/florian-noirbent/", intro: true },
+  { label: "Discord", text: "titan8190", href: "https://discordapp.com/users/titan8190", intro: false }
 ] as const;
 
 /**
@@ -35,11 +59,20 @@ export const THEME = {
 export const ROUTES = {
   games: "/games",
   blog: "/blog",
-  assets: "/assets"
+  assets: "/assets",
+  about: "/about",
+  contact: "/about#contact"
 } as const;
 
+/**
+ * Home page. The hero shows the most recent game with `featured: true`;
+ * `moreGames` lists the slugs shown in the row below it, in order.
+ */
 export const HOME = {
-  recentPostCount: 3
+  recentPostCount: 3,
+  moreGames: ["beltwork", "core-fantasy-arena", "hopboy"],
+  /** Game whose App Store ranking is quoted in the proof strip. */
+  proofGame: "hopboy"
 } as const;
 
 /** Blog post types: the key is stored in frontmatter, the value is displayed. */

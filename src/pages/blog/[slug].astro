@@ -6,7 +6,8 @@ import Tag from "../../components/Tag.astro";
 import { getPosts, postCardImage, postTags, postTypeLabel, postHasTag, tagUrl } from "../../lib/blog";
 import { gameUrl, getGames } from "../../lib/games";
 import { formatDate, isoDate } from "../../lib/format";
-import { ROUTES } from "../../config/site";
+import { ROUTES, SITE } from "../../config/site";
+import Byline from "../../components/Byline.astro";
 
 export async function getStaticPaths() {
   const posts = await getPosts();
@@ -23,7 +24,7 @@ const tags = postTags(post);
 const relatedGames = (await getGames()).filter((game) => postHasTag(post, game.slug));
 ---
 
-<BaseLayout title={`${title} | Blog | Titan`} description={description} image={postCardImage(post).src} ogType="article">
+<BaseLayout persona="handle" title={`${title} | Blog | ${SITE.handle}`} description={description} image={postCardImage(post).src} ogType="article">
   <a class="button-secondary mb-6 inline-flex" href={ROUTES.blog}>Back to Blog</a>
 
   <article class="space-y-8">
@@ -34,6 +35,7 @@ const relatedGames = (await getGames()).filter((game) => postHasTag(post, game.s
       </div>
       <h1 class="mt-3 text-3xl font-extrabold sm:text-4xl">{title}</h1>
       <p class="mt-4 max-w-3xl text-slate-700 dark:text-slate-300">{description}</p>
+      <div class="mt-4"><Byline /></div>
 
       <div class="mt-6 flex flex-wrap gap-2">
         {tags.map((tag) => <Tag label={tag.label} href={tagUrl(tag.key)} />)}

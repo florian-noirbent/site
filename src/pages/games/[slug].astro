@@ -7,7 +7,8 @@ import Prose from "../../components/Prose.astro";
 import { getGameLinks, getGames } from "../../lib/games";
 import { getPostsForGame, tagUrl } from "../../lib/blog";
 import { formatMonthYear } from "../../lib/format";
-import { ROUTES } from "../../config/site";
+import { ROUTES, SITE } from "../../config/site";
+import Byline from "../../components/Byline.astro";
 
 export async function getStaticPaths() {
   const games = await getGames();
@@ -27,7 +28,7 @@ const posts = await getPostsForGame(game);
 const statusLabel = game.data.status === "released" ? "Released" : "Unreleased";
 ---
 
-<BaseLayout title={`${game.data.title} | Games | Titan`} description={game.data.description} image={game.data.cardImage}>
+<BaseLayout persona="handle" title={`${game.data.title} | Games | ${SITE.handle}`} description={game.data.description} image={game.data.cardImage}>
   <a class="button-secondary mb-6 inline-flex" href={ROUTES.games}>Back to Games</a>
 
   <article class="space-y-8">
@@ -42,6 +43,7 @@ const statusLabel = game.data.status === "released" ? "Released" : "Unreleased";
           <p class="mb-2 text-xs font-semibold uppercase tracking-wide text-cyan-700 dark:text-cyan-300">Game detail</p>
           <h1 class="text-3xl font-extrabold sm:text-4xl">{game.data.title}</h1>
           <p class="mt-4 max-w-3xl text-slate-700 dark:text-slate-300">{game.data.description}</p>
+          <div class="mt-4"><Byline /></div>
 
           <dl class="mt-6 grid gap-3 text-sm sm:grid-cols-2">
             <div>

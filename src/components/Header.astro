@@ -1,5 +1,5 @@
 ---
-import { NAV_LINKS, THEME } from "../config/site";
+import { NAV_LINKS, SITE, THEME } from "../config/site";
 
 interface Props {
   currentPath: string;
@@ -7,62 +7,99 @@ interface Props {
 
 const { currentPath } = Astro.props;
 
-const links = NAV_LINKS;
+const isActive = (href: string) => currentPath === href || currentPath.startsWith(`${href}/`);
 
-const isActive = (href: string) =>
-  href === "/"
-    ? currentPath === "/"
-    : currentPath === href || currentPath.startsWith(`${href}/`);
+const themeLabels = Object.fromEntries(THEME.options.map((option) => [option.value, option.label]));
+const themeOrder = THEME.options.map((option) => option.value);
 ---
 
 <header class="border-b border-slate-200/80 bg-white/85 backdrop-blur dark:border-slate-800 dark:bg-slate-950/80">
-  <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6 lg:px-8">
-    <a href="/" class="text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100">
-      Titan - game developer
+  <div class="mx-auto flex w-full max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-1 px-4 py-3 sm:px-6 lg:px-8">
+    <a
+      href="/"
+      class="flex items-center gap-2.5 text-lg font-extrabold tracking-tight text-slate-900 dark:text-slate-100"
+      aria-current={currentPath === "/" ? "page" : undefined}
+    >
+      <img
+        src={SITE.avatar}
+        alt=""
+        width="32"
+        height="32"
+        class="h-8 w-8 rounded-full border border-slate-200 dark:border-slate-700"
+      />
+      <span>{SITE.name}</span>
+      <span class="flex items-center gap-1.5 border-l border-slate-300 pl-2.5 text-base font-semibold text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <img
+          src={SITE.handleAvatar}
+          alt=""
+          width="24"
+          height="24"
+          class="h-6 w-6 rounded-full border border-slate-200 dark:border-slate-700"
+        />
+        <span><span class="sr-only">also known as </span>{SITE.handle}</span>
+      </span>
     </a>
 
-    <div class="flex items-center gap-2 sm:gap-3">
-      <nav aria-label="Main navigation">
-        <ul class="flex flex-wrap items-center gap-1">
-          {
-            links.map((link) => (
-              <li>
-                <a
-                  href={link.href}
-                  class:list={[
-                    "rounded-lg px-3 py-2 text-sm font-medium transition",
-                    isActive(link.href)
-                      ? "bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-200"
-                      : "text-slate-700 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-                  ]}
-                  aria-current={isActive(link.href) ? "page" : undefined}
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))
-          }
-        </ul>
-      </nav>
+    <button
+      id="theme-toggle"
+      type="button"
+      class="order-2 rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-950 sm:order-3 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+      aria-label="Color theme"
+    >
+      <svg class="theme-icon theme-icon-system h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <rect x="3" y="4" width="18" height="12" rx="2"></rect>
+        <path d="M8 20h8M12 16v4"></path>
+      </svg>
+      <svg class="theme-icon theme-icon-light h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <circle cx="12" cy="12" r="4"></circle>
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"></path>
+      </svg>
+      <svg class="theme-icon theme-icon-dark h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+        <path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"></path>
+      </svg>
+    </button>
 
-      <label for="theme-select" class="sr-only">Color theme</label>
-      <select
-        id="theme-select"
-        class="rounded-lg border border-slate-300 bg-transparent px-2.5 py-2 text-sm font-medium text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-700 dark:text-slate-200 dark:hover:border-cyan-500 dark:hover:text-cyan-300"
-      >
-        {THEME.options.map((option) => <option value={option.value}>{option.label}</option>)}
-      </select>
-    </div>
+    <nav aria-label="Main navigation" class="order-3 -mx-2 w-full sm:order-2 sm:mx-0 sm:ml-auto sm:w-auto">
+      <ul class="flex items-center gap-1">
+        {
+          NAV_LINKS.map((link) => (
+            <li>
+              <a
+                href={link.href}
+                class:list={[
+                  "block rounded-lg px-3 py-2 text-sm font-medium transition",
+                  isActive(link.href)
+                    ? "bg-cyan-100 text-cyan-800 dark:bg-cyan-950/60 dark:text-cyan-200"
+                    : "text-slate-700 hover:bg-slate-100 hover:text-slate-950 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-slate-100"
+                ]}
+                aria-current={isActive(link.href) ? "page" : undefined}
+              >
+                {link.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
   </div>
 </header>
 
-<script is:inline>
+<script is:inline define:vars={{ themeLabels, themeOrder }}>
   (() => {
-    const select = document.getElementById("theme-select");
-    if (!select || !window.siteTheme) return;
-    select.value = window.siteTheme.get();
-    select.addEventListener("change", () => window.siteTheme.set(select.value));
-    // Keep the selector in sync when another tab changes the theme.
-    window.addEventListener("themechange", (event) => (select.value = event.detail));
+    const button = document.getElementById("theme-toggle");
+    if (!button || !window.siteTheme) return;
+    // The icon follows <html data-theme> in CSS; only the label needs syncing.
+    const sync = (preference) => {
+      const label = `Color theme: ${themeLabels[preference]}. Click to change.`;
+      button.setAttribute("aria-label", label);
+      button.title = label;
+    };
+    sync(window.siteTheme.get());
+    button.addEventListener("click", () => {
+      const next = themeOrder[(themeOrder.indexOf(window.siteTheme.get()) + 1) % themeOrder.length];
+      window.siteTheme.set(next);
+    });
+    // Also fires when another tab changes the theme.
+    window.addEventListener("themechange", (event) => sync(event.detail));
   })();
 </script>

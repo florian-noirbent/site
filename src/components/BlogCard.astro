@@ -16,35 +16,31 @@ const hiddenTagCount = tags.length - shownTags.length;
 const card = postCardImage(post);
 ---
 
-<a
-  href={postUrl(post)}
-  class="surface group block h-full transition hover:-translate-y-0.5 hover:border-cyan-300 hover:shadow-md dark:hover:border-cyan-700"
->
-  <article class="flex h-full flex-col gap-4">
+<a href={postUrl(post)} class="card card-link group">
+  <article class="flex h-full flex-col">
     <img
       src={card.src}
       alt=""
-      class:list={[
-        "h-44 w-full rounded-xl border border-slate-200 dark:border-slate-700",
-        card.fit === "contain" ? "bg-white object-contain p-1" : "object-cover"
-      ]}
+      class:list={["card-media h-44", card.fit === "contain" ? "bg-white object-contain p-2" : "object-cover"]}
       loading="lazy"
     />
 
-    <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-wide">
-      <span class="text-cyan-700 dark:text-cyan-300">{postTypeLabel(post)}</span>
-      <time datetime={isoDate(date)} class="text-slate-500 dark:text-slate-400">{formatDate(date)}</time>
-    </div>
+    <div class="flex flex-1 flex-col gap-3 p-5">
+      <div class="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs font-semibold uppercase tracking-wide">
+        <span class="text-cyan-700 dark:text-cyan-300">{postTypeLabel(post)}</span>
+        <time datetime={isoDate(date)} class="text-slate-500 dark:text-slate-400">{formatDate(date)}</time>
+      </div>
 
-    <h3 class="text-lg font-bold text-slate-900 group-hover:text-cyan-700 dark:text-slate-100 dark:group-hover:text-cyan-300">
-      {title}
-    </h3>
+      <h3 class="text-lg font-bold text-slate-900 group-hover:text-cyan-700 dark:text-slate-100 dark:group-hover:text-cyan-300">
+        {title}
+      </h3>
 
-    <p class="text-sm text-slate-700 dark:text-slate-300">{description}</p>
+      <p class="text-sm text-slate-700 dark:text-slate-300">{description}</p>
 
-    <div class="mt-auto flex flex-wrap gap-2">
-      {shownTags.map((tag) => <Tag label={tag.label} />)}
-      {hiddenTagCount > 0 && <span class="self-center text-xs text-slate-500 dark:text-slate-400">+{hiddenTagCount}</span>}
+      <div class="mt-auto flex flex-wrap gap-2 pt-1">
+        {shownTags.map((tag) => <Tag label={tag.label} />)}
+        {hiddenTagCount > 0 && <span class="self-center text-xs text-slate-500 dark:text-slate-400">+{hiddenTagCount}</span>}
+      </div>
     </div>
   </article>
 </a>

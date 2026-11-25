@@ -8,7 +8,7 @@ const upcoming = assets.filter((asset) => asset.data.status !== "shipped");
 ---
 
 <BaseLayout
-  title="Assets | Titan"
+  title="Assets | Florian Noirbent"
   description="Assets released on the stores."
 >
   <section>
@@ -19,7 +19,7 @@ const upcoming = assets.filter((asset) => asset.data.status !== "shipped");
   </section>
 
   <section class="mt-8">
-    <div class="grid gap-5 md:grid-cols-2">
+    <div class="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
       {
         assets.map((asset) => (
           <ProjectCard

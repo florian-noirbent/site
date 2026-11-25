@@ -1,6 +1,6 @@
-# Titan Portfolio Site
+# Florian Noirbent Portfolio Site
 
-Personal portfolio site for **Titan** built with Astro + Tailwind CSS, focused on real-time destruction systems and gameplay tooling.
+Personal portfolio site for **Florian Noirbent**, also known as **Titan** built with Astro + Tailwind CSS, focused on real-time destruction systems and gameplay tooling.
 
 ## Local Development
 
@@ -26,7 +26,7 @@ npm run preview
 
 ## Notes
 
-- Site URL is configured as `https://titan.nofl.uk`.
+- Site URL is configured as `https://florian-noirbent.nofl.uk` (canonical). The previous domain `https://titan.nofl.uk` stays attached as a custom domain of the same Cloudflare Worker (`site`).
 - Theme: System (default, follows the OS/browser setting live), Light or Dark, chosen in the header. Only an explicit Light/Dark choice is stored in `localStorage` (see `THEME` in `src/config/site.ts`); dark mode is class-based.
 - No tracking or analytics are enabled by default.
 - Game placeholder generation workflow is documented in `docs/game-placeholders.md`.

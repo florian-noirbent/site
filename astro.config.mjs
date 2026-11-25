@@ -4,8 +4,12 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://astro.build/config
 export default defineConfig({
-  site: 'https://titan.nofl.uk',
+  site: 'https://florian-noirbent.nofl.uk',
   output: 'static',
+  // Contact moved into the About page.
+  redirects: {
+    '/contact': '/about#contact'
+  },
   vite: {
     plugins: [tailwindcss()]
   }

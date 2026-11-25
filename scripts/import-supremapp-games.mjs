@@ -176,7 +176,7 @@ function selectIphoneScreenshotUrls(urls) {
 async function fetchText(url) {
   const response = await fetch(url, {
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; TitanImporter/1.0)"
+      "User-Agent": "Mozilla/5.0 (compatible; PortfolioImporter/1.0)"
     }
   });
   if (!response.ok) {
@@ -188,7 +188,7 @@ async function fetchText(url) {
 async function downloadFile(url, outputPath) {
   const response = await fetch(url, {
     headers: {
-      "User-Agent": "Mozilla/5.0 (compatible; TitanImporter/1.0)"
+      "User-Agent": "Mozilla/5.0 (compatible; PortfolioImporter/1.0)"
     }
   });
   if (!response.ok) {
